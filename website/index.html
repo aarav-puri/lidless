@@ -11,7 +11,8 @@
 <link rel="icon" href="icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600&display=swap" rel="stylesheet">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -37,7 +38,7 @@
     --green: #4ade9b;
     --font: 'Geist', ui-sans-serif, system-ui, -apple-system, sans-serif;
     --mono: 'Geist Mono', ui-monospace, 'SF Mono', Menlo, monospace;
-    --serif: 'Instrument Serif', 'Iowan Old Style', Georgia, serif;
+    --display: 'Clash Display', 'Geist', ui-sans-serif, system-ui, sans-serif;
     --max-w: 660px;
   }
   html {
@@ -66,8 +67,7 @@
 
   section { padding: 64px 0; }
   section + section { border-top: 1px solid var(--border); }
-  h2 { font-family: var(--serif); font-style: italic; font-size: clamp(30px, 5vw, 38px); font-weight: 400; line-height: 1.1; letter-spacing: -.01em; color: var(--heading); margin-bottom: 26px; }
-  h2::first-letter { color: var(--accent); }
+  h2 { font-family: var(--display); font-size: clamp(28px, 4.6vw, 34px); font-weight: 600; line-height: 1.1; letter-spacing: -.01em; color: var(--heading); margin-bottom: 24px; }
   h3 { font-size: 15px; font-weight: 700; color: var(--heading); letter-spacing: -.01em; margin: 30px 0 8px; }
   h3:first-of-type { margin-top: 0; }
   p { font-size: 15px; line-height: 1.75; }
