@@ -2,7 +2,7 @@
 import AppKit
 
 enum StatusIcon {
-    enum State { case off, waiting, working, paused }
+    enum State { case waiting, working, paused }
 
     static func image(_ state: State) -> NSImage {
         let img = NSImage(size: NSSize(width: 20, height: 18), flipped: false) { _ in
@@ -37,25 +37,12 @@ enum StatusIcon {
                 chevron.lineJoinStyle = .round
                 chevron.stroke()
                 NSBezierPath(roundedRect: NSRect(x: 10.6, y: 10.3, width: 4.2, height: 1.6), xRadius: 0.8, yRadius: 0.8).fill()
-            case .off:
-                // "z": asleep, Lidless is ignoring agents.
-                for (x, y, s) in [(7.0, 10.6, 4.4), (12.2, 13.2, 3.4)] as [(CGFloat, CGFloat, CGFloat)] {
-                    let z = NSBezierPath()
-                    z.move(to: NSPoint(x: x, y: y + s))
-                    z.line(to: NSPoint(x: x + s, y: y + s))
-                    z.line(to: NSPoint(x: x, y: y))
-                    z.line(to: NSPoint(x: x + s, y: y))
-                    z.lineWidth = 1.3
-                    z.lineCapStyle = .round
-                    z.lineJoinStyle = .round
-                    z.stroke()
-                }
             case .paused:
                 // "!": held back by the battery or heat guard.
                 NSBezierPath(roundedRect: NSRect(x: 9.2, y: 12.4, width: 1.6, height: 4.8), xRadius: 0.8, yRadius: 0.8).fill()
                 NSBezierPath(ovalIn: NSRect(x: 9.15, y: 9.6, width: 1.7, height: 1.7)).fill()
             case .waiting:
-                // A blinking-cursor bar: armed, waiting for an agent to start.
+                // A cursor bar: waiting for an agent to start.
                 NSBezierPath(roundedRect: NSRect(x: 8, y: 10.3, width: 4, height: 1.6), xRadius: 0.8, yRadius: 0.8).fill()
             }
             return true

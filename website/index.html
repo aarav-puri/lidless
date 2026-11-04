@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Lidless - Cloud Mode for Local Agents</title>
+<title>Lidless - Keep Agents Running With the Lid Closed</title>
 <meta name="description" content="Free macOS menubar app that keeps your Mac awake with the lid closed for exactly as long as your coding agent is working. Claude Code, Codex, Gemini CLI and more. No timers.">
-<meta property="og:title" content="Lidless - Cloud Mode for Local Agents">
+<meta property="og:title" content="Lidless - Keep Agents Running With the Lid Closed">
 <meta property="og:description" content="Close the lid. The agent keeps going. When it finishes, the Mac sleeps.">
 <meta property="og:image" content="icon.png">
 <link rel="icon" href="icon.png">
@@ -157,8 +157,8 @@
 
   <section>
     <h2>How it knows</h2>
-    <h3>Claude Code: exact</h3>
-    <p>Lidless adds three hooks to <code>~/.claude/settings.json</code>. <code>UserPromptSubmit</code> starts a hold, <code>Stop</code> and <code>SessionEnd</code> end it. Accurate to the second, across every session and every terminal.</p>
+    <h3>Claude Code and Codex: exact</h3>
+    <p>Lidless adds hooks to <code>~/.claude/settings.json</code> and <code>~/.codex/hooks.json</code> in the background. <code>UserPromptSubmit</code> starts a hold; <code>Stop</code>, <code>SessionEnd</code> and, for Codex, <code>Interrupt</code> end it. Accurate to the second, across every session and every terminal. Codex asks to review new hooks once the next time it opens. Until then, Codex is tracked by activity.</p>
     <h3>Other agents: by activity</h3>
     <p>Everything else is detected by process. An agent counts as working while it or anything it spawned is using CPU. Lidless waits two quiet minutes before letting go, so a slow model response is not mistaken for done.</p>
     <div class="agents">
@@ -199,7 +199,7 @@
       <li><p>Start an agent. Close the lid.</p></li>
     </ol>
     <div class="callout">
-      <strong>What Set Up changes, exactly.</strong> It adds <code>/etc/sudoers.d/lidless</code>, which lets your user run two commands without a password: <code>pmset -a disablesleep 1</code> and <code>pmset -a disablesleep 0</code>. Nothing else. It also links the <code>lidless</code> command into <code>/usr/local/bin</code>. The Claude Code hooks are added in the background whenever Claude Code is installed, with a backup of your settings kept first. <strong>Uninstall…</strong> in the menu removes all of it.
+      <strong>What Set Up changes, exactly.</strong> It adds <code>/etc/sudoers.d/lidless</code>, which lets your user run two commands without a password: <code>pmset -a disablesleep 1</code> and <code>pmset -a disablesleep 0</code>. Nothing else. It also links the <code>lidless</code> command into <code>/usr/local/bin</code>. Hooks for Claude Code and Codex are added in the background when either is installed, with a backup of each config file kept first. <strong>Uninstall</strong> in the menu removes all of it.
     </div>
     <div class="callout">
       <strong>Not on the App Store</strong> because App Store sandboxing blocks the system call lid-close sleep needs. Same reason tools like Lunar and BetterTouchTool ship outside it.
@@ -234,8 +234,6 @@
     <h3>What if Claude Code is waiting on a permission prompt?</h3>
     <p>A permission prompt is not a finished turn, so the Mac stays awake waiting for an answer. For unattended runs, use auto mode or allow rules so nothing blocks. If a session goes fully quiet for 15 minutes without finishing, Lidless lets it go anyway.</p>
 
-    <h3>Does Cloud Mode need to be turned on every time?</h3>
-    <p>No. Leave it on. With no agent working, Lidless does nothing and the Mac sleeps like normal. Turn it off from the menubar to ignore agents entirely.</p>
 
     <h3>Does it drain battery faster?</h3>
     <p>Only while an agent is working, and then about as much as using the Mac with the lid open. Plug in when you can.</p>

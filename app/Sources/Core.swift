@@ -64,6 +64,16 @@ enum HoldStore {
     }
 }
 
+/// Remembers which agents have actually fired a Lidless hook, so CPU guessing can stand down for them.
+enum HookSeen {
+    static func url(_ key: String) -> URL { Paths.support.appendingPathComponent("hook-seen-\(key)") }
+    static func mark(_ key: String) {
+        try? FileManager.default.createDirectory(at: Paths.support, withIntermediateDirectories: true)
+        if !has(key) { FileManager.default.createFile(atPath: url(key).path, contents: nil) }
+    }
+    static func has(_ key: String) -> Bool { FileManager.default.fileExists(atPath: url(key).path) }
+}
+
 func isAlive(_ pid: Int32) -> Bool {
     guard pid > 0 else { return false }
     return kill(pid, 0) == 0 || errno == EPERM

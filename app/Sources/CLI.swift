@@ -7,7 +7,7 @@ enum CLI {
     usage:
       lidless run -- <command> [args...]   keep the Mac awake until the command exits
       lidless status                       show what Lidless is holding for
-      lidless hook start|stop              used by the Claude Code hooks
+      lidless hook start|stop [agent]      used by the Claude Code and Codex hooks
 
     """
 
@@ -17,10 +17,10 @@ enum CLI {
         switch command {
         case "run": return runCommand(Array(args.dropFirst()))
         case "status": return status()
-        case "hook": return hook(args.dropFirst().first ?? "")
+        case "hook": return hook(args.dropFirst().first ?? "", agent: args.count > 2 ? args[2] : "claude")
         case "--self-test": return SelfTest.run()
         case "--render-icons":
-            for (name, st) in [("off", StatusIcon.State.off), ("waiting", .waiting), ("working", .working), ("paused", .paused)] {
+            for (name, st) in [("waiting", StatusIcon.State.waiting), ("working", .working), ("paused", .paused)] {
                 let img = StatusIcon.image(st)
                 let rep = NSBitmapImageRep(bitmapDataPlanes: nil, pixelsWide: 160, pixelsHigh: 144, bitsPerSample: 8, samplesPerPixel: 4, hasAlpha: true, isPlanar: false, colorSpaceName: .deviceRGB, bytesPerRow: 0, bitsPerPixel: 0)!
                 NSGraphicsContext.saveGraphicsState(); NSGraphicsContext.current = NSGraphicsContext(bitmapImageRep: rep)
@@ -38,16 +38,18 @@ enum CLI {
 
     // MARK: hook
 
-    /// Claude Code hook. UserPromptSubmit starts a hold for the session, Stop and SessionEnd end it.
-    static func hook(_ action: String) -> Int32 {
+    /// Agent hook. UserPromptSubmit starts a hold for the session; Stop, Interrupt and SessionEnd end it.
+    static func hook(_ action: String, agent: String) -> Int32 {
+        let target = HookTarget.target(for: agent)
         let input = FileHandle.standardInput.readDataToEndOfFile()
         let json = (try? JSONSerialization.jsonObject(with: input)) as? [String: Any] ?? [:]
         let session = (json["session_id"] as? String) ?? "pid-\(agentAncestor())"
-        let id = "claude-" + session
+        let id = "\(target.key)-" + session
+        HookSeen.mark(target.key)
         switch action {
         case "start":
             let old = HoldStore.live().first { $0.id == id }
-            HoldStore.write(Hold(id: id, pid: agentAncestor(), label: "Claude Code", kind: "hook",
+            HoldStore.write(Hold(id: id, pid: agentAncestor(), label: target.label, kind: "hook",
                                  started: old?.started ?? Date().timeIntervalSince1970))
             launchAppIfNeeded()
         case "stop":
@@ -173,14 +175,24 @@ enum SelfTest {
 
         // Claude settings merge keeps other hooks and is idempotent.
         let settings: [String: Any] = ["model": "opus", "hooks": ["Stop": [["hooks": [["type": "command", "command": "say done"]]]]]]
-        let merged = ClaudeHooks.merged(settings, binary: "/Applications/Lidless.app/Contents/MacOS/Lidless", install: true)
-        let twice = ClaudeHooks.merged(merged, binary: "/Applications/Lidless.app/Contents/MacOS/Lidless", install: true)
-        check(ClaudeHooks.isInstalled(in: merged), "hooks installed")
+        let merged = Hooks.merged(settings, binary: "/Applications/Lidless.app/Contents/MacOS/Lidless", install: true)
+        let twice = Hooks.merged(merged, binary: "/Applications/Lidless.app/Contents/MacOS/Lidless", install: true)
+        check(Hooks.isInstalled(in: merged), "hooks installed")
         check(StatusIcon.image(.working).isTemplate, "status icon")
         check(((twice["hooks"] as? [String: Any])?["Stop"] as? [Any])?.count == 2, "stop hooks idempotent")
         check(((twice["hooks"] as? [String: Any])?["UserPromptSubmit"] as? [Any])?.count == 1, "prompt hook once")
-        let removed = ClaudeHooks.merged(twice, binary: "x", install: false)
-        check(!ClaudeHooks.isInstalled(in: removed), "hooks removed")
+        let removed = Hooks.merged(twice, binary: "x", install: false)
+        check(!Hooks.isInstalled(in: removed), "hooks removed")
+        let codex = Hooks.merged([:], binary: "/A/Lidless.app/Contents/MacOS/Lidless", install: true, target: .codex)
+        check(Hooks.isInstalled(in: codex, events: HookTarget.codex.events), "codex hooks")
+        check(((codex["hooks"] as? [String: Any])?["Interrupt"] as? [[String: Any]])?.first.map { "\($0)".contains("hook stop codex") } == true, "codex command")
+
+        // Codex feature flag.
+        check(CodexFeature.withFlag("model = \"x\"\n\n[features]\nmemories = true\n") == "model = \"x\"\n\n[features]\ncodex_hooks = true\nmemories = true\n", "flag into features")
+        check(CodexFeature.withFlag("[features]\ncodex_hooks = false\n") == "[features]\ncodex_hooks = true\n", "flag flipped")
+        check(CodexFeature.withFlag("model = \"x\"") == "model = \"x\"\n\n[features]\ncodex_hooks = true\n", "features table appended")
+        check(CodexFeature.enabled(in: "[features]\ncodex_hooks = true\n[other]\n"), "flag detected")
+        check(!CodexFeature.enabled(in: "[other]\ncodex_hooks = true\n"), "flag only under features")
         check(((removed["hooks"] as? [String: Any])?["Stop"] as? [Any])?.count == 1, "other hooks kept")
         check(removed["model"] as? String == "opus", "other settings kept")
 

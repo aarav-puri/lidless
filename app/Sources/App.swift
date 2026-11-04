@@ -16,7 +16,7 @@ final class Monitor {
     private var workStart: [Int32: Date] = [:]
     private var firstSeen: [Int32: Date] = [:]
 
-    func sources(hooksInstalled: Bool, now: Date = Date()) -> [Source] {
+    func sources(hookAgents: Set<String>, now: Date = Date()) -> [Source] {
         let agents = findAgents(in: Agents.snapshot())
         let alive = Set(agents.map(\.pid))
         for pid in Array(lastBusy.keys) where !alive.contains(pid) { lastBusy[pid] = nil; workStart[pid] = nil }
@@ -31,8 +31,8 @@ final class Monitor {
             } else if let last = lastBusy[a.pid], now.timeIntervalSince(last) > Monitor.quietWindow {
                 workStart[a.pid] = nil
             }
-            // With hooks, Claude Code reports its own start and finish exactly.
-            if a.key == "claude" && hooksInstalled { continue }
+            // Once an agent's hooks have fired, it reports its own start and finish exactly.
+            if hookAgents.contains(a.key) { continue }
             if let start = workStart[a.pid] { out.append(Source(label: Agents.known[a.key] ?? a.key, since: start)) }
         }
 
@@ -56,13 +56,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     private var sources: [Source] = []
     private var holding = false
     private var pausedReason: String?
-    private var hooksInstalled = false
 
     private let defaults = UserDefaults.standard
-    private var armed: Bool {
-        get { defaults.object(forKey: "armed") as? Bool ?? true }
-        set { defaults.set(newValue, forKey: "armed"); tick() }
-    }
     private var engagedMarker: URL { Paths.support.appendingPathComponent("engaged") }
 
     func applicationDidFinishLaunching(_ note: Notification) {
@@ -102,13 +97,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
     private func tick() {
         syncHooks()
-        sources = armed ? monitor.sources(hooksInstalled: hooksInstalled) : []
+        let hookAgents = Set(HookTarget.all.map(\.key).filter { Hooks.isInstalled(HookTarget.target(for: $0)) && HookSeen.has($0) })
+        sources = monitor.sources(hookAgents: hookAgents)
 
         pausedReason = nil
         if ProcessInfo.processInfo.thermalState == .critical { pausedReason = "Paused: Mac is too hot" }
         if let b = Power.battery(), b.onBattery, b.percent <= 20 { pausedReason = "Paused: battery at \(b.percent)%" }
 
-        let want = armed && Power.isAuthorized && !sources.isEmpty && pausedReason == nil
+        let want = Power.isAuthorized && !sources.isEmpty && pausedReason == nil
         if want && !holding { engage() }
         if !want && holding { release(sleepIfClosed: true) }
         updateIcon()
@@ -136,8 +132,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
     private func updateIcon() {
         let state: StatusIcon.State
-        if !armed { state = .off }
-        else if pausedReason != nil { state = .paused }
+        if pausedReason != nil { state = .paused }
         else if holding { state = .working }
         else { state = .waiting }
         item.button?.image = StatusIcon.image(state)
@@ -145,7 +140,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     }
 
     private var statusLine: String {
-        if !armed { return "Cloud Mode is off" }
         if !Power.isAuthorized { return "Needs permission to keep the lid awake" }
         if let p = pausedReason { return p }
         if holding { return sources.count == 1 ? "Awake until the agent finishes" : "Awake until \(sources.count) agents finish" }
@@ -158,15 +152,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         tick()
         menu.removeAllItems()
 
-        let toggle = NSMenuItem(title: "Cloud Mode", action: #selector(toggleArmed), keyEquivalent: "")
-        toggle.state = armed ? .on : .off
-        toggle.target = self
-        menu.addItem(toggle)
-        menu.addItem(.separator())
-
-        let status = NSMenuItem(title: statusLine, action: nil, keyEquivalent: "")
-        status.isEnabled = false
-        menu.addItem(status)
         for s in sources {
             let row = NSMenuItem(title: "\(s.label)  ·  \(Self.elapsed(since: s.since))", action: nil, keyEquivalent: "")
             row.isEnabled = false
@@ -175,12 +160,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
                 .withSymbolConfiguration(.init(pointSize: 7, weight: .regular).applying(.init(paletteColors: [.systemGreen])))
             menu.addItem(row)
         }
-        if armed && !Power.isAuthorized {
+        if !Power.isAuthorized {
             let allow = NSMenuItem(title: "Allow Lid-Closed Awake…", action: #selector(authorize), keyEquivalent: "")
             allow.target = self
             menu.addItem(allow)
         }
-        menu.addItem(.separator())
+        if menu.numberOfItems > 0 { menu.addItem(.separator()) }
 
         let login = NSMenuItem(title: "Open at Login", action: #selector(toggleLogin), keyEquivalent: "")
         login.state = SMAppService.mainApp.status == .enabled ? .on : .off
@@ -193,7 +178,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             menu.addItem(cli)
         }
         menu.addItem(.separator())
-        let uninstall = NSMenuItem(title: "Uninstall…", action: #selector(uninstall), keyEquivalent: "")
+        let uninstall = NSMenuItem(title: "Uninstall", action: #selector(uninstall), keyEquivalent: "")
         uninstall.target = self
         menu.addItem(uninstall)
         menu.addItem(NSMenuItem(title: "Quit Lidless", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q"))
@@ -208,22 +193,16 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
     // MARK: Actions
 
-    @objc private func toggleArmed() {
-        armed.toggle()
-        if armed && !Power.isAuthorized { authorize() }
-    }
-
-    /// Keeps the Claude Code hooks installed in the background, pointing at this copy of the app.
-    /// Runs every tick but only writes when they are missing or stale. Never touches a file it can't parse.
-    private var hookWriteFailed = false
+    /// Keeps Claude Code and Codex hooks installed in the background, pointing at this copy of the app.
+    /// Only writes when they are missing or stale, and never touches a file it can't parse.
+    private var hookWriteFailed: Set<String> = []
     private func syncHooks() {
-        let binary = Bundle.main.executablePath ?? ""
-        let claudeDir = ClaudeHooks.settingsURL.deletingLastPathComponent().path
-        guard !binary.isEmpty, FileManager.default.fileExists(atPath: claudeDir) else { hooksInstalled = false; return }
-        if !ClaudeHooks.isCurrent(binary: binary) && !hookWriteFailed {
-            do { try ClaudeHooks.set(installed: true, binary: binary) } catch { hookWriteFailed = true }
+        guard let binary = Bundle.main.executablePath else { return }
+        for t in HookTarget.all where FileManager.default.fileExists(atPath: t.home.path) && !hookWriteFailed.contains(t.key) {
+            if !Hooks.isCurrent(t, binary: binary) {
+                do { try Hooks.set(t, installed: true, binary: binary) } catch { hookWriteFailed.insert(t.key) }
+            }
         }
-        hooksInstalled = ClaudeHooks.isInstalled
     }
 
     @objc private func toggleLogin() {
@@ -255,13 +234,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     @objc private func uninstall() {
         let a = NSAlert()
         a.messageText = "Uninstall Lidless?"
-        a.informativeText = "Removes the pmset permission, the lidless command, and the Claude Code hooks, restores normal sleep, then moves the app to the Trash."
+        a.informativeText = "Removes the pmset permission, the lidless command, and the Claude Code and Codex hooks, restores normal sleep, then moves the app to the Trash."
         a.addButton(withTitle: "Uninstall")
         a.addButton(withTitle: "Cancel")
         NSApp.activate(ignoringOtherApps: true)
         guard a.runModal() == .alertFirstButtonReturn else { return }
         if holding { release(sleepIfClosed: false) }
-        try? ClaudeHooks.set(installed: false, binary: "")
+        for t in HookTarget.all { try? Hooks.set(t, installed: false, binary: "") }
         try? SMAppService.mainApp.unregister()
         let ok = runAsAdmin("""
         /bin/rm -f \(Paths.sudoers)
@@ -290,11 +269,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
     private func showSetup() {
         let a = NSAlert()
-        a.messageText = "Cloud Mode for your agents"
+        a.messageText = "Keep agents running with the lid closed"
         a.informativeText = """
         Lidless keeps your Mac awake with the lid closed while an agent is working, and lets it sleep the moment the work is done.
 
-        Set Up asks for your password once to allow two commands: pmset disablesleep 1 and 0. Claude Code turns are tracked automatically.
+        Set Up asks for your password once to allow two commands: pmset disablesleep 1 and 0. Claude Code and Codex turns are tracked automatically.
         """
         a.addButton(withTitle: "Set Up")
         a.addButton(withTitle: "Not Now")
