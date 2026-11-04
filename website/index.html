@@ -11,7 +11,7 @@
 <link rel="icon" href="icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -37,6 +37,7 @@
     --green: #4ade9b;
     --font: 'Geist', ui-sans-serif, system-ui, -apple-system, sans-serif;
     --mono: 'Geist Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+    --serif: 'Instrument Serif', 'Iowan Old Style', Georgia, serif;
     --max-w: 660px;
   }
   html {
@@ -51,8 +52,7 @@
 
   /* Hero */
   .hero { padding: 84px 0 72px; text-align: center; animation: fadein .7s ease both; }
-  .brand-mark img { width: 104px; height: 104px; display: block; margin: 0 auto 32px; filter: drop-shadow(0 18px 40px rgba(40, 80, 200, .35)); }
-  .hero-label { font-family: var(--mono); font-size: 11px; letter-spacing: .2em; text-transform: uppercase; color: var(--accent); margin-bottom: 22px; }
+  .brand-mark img { width: 104px; height: 104px; display: block; margin: 0 auto 36px; filter: drop-shadow(0 18px 40px rgba(40, 80, 200, .35)); }
   .hero h1 { font-size: clamp(2.3rem, 7vw, 3.5rem); font-weight: 800; line-height: 1.04; letter-spacing: -.035em; color: var(--heading); margin-bottom: 24px; }
   .hero h1 em { font-style: normal; color: var(--accent); }
   .hero-sub { font-size: 17px; line-height: 1.65; max-width: 520px; margin: 0 auto 38px; }
@@ -66,7 +66,8 @@
 
   section { padding: 64px 0; }
   section + section { border-top: 1px solid var(--border); }
-  h2 { font-family: var(--mono); font-size: 11px; font-weight: 500; letter-spacing: .2em; text-transform: uppercase; color: var(--muted); margin-bottom: 30px; }
+  h2 { font-family: var(--serif); font-style: italic; font-size: clamp(30px, 5vw, 38px); font-weight: 400; line-height: 1.1; letter-spacing: -.01em; color: var(--heading); margin-bottom: 26px; }
+  h2::first-letter { color: var(--accent); }
   h3 { font-size: 15px; font-weight: 700; color: var(--heading); letter-spacing: -.01em; margin: 30px 0 8px; }
   h3:first-of-type { margin-top: 0; }
   p { font-size: 15px; line-height: 1.75; }
@@ -76,40 +77,6 @@
   pre { font-family: var(--mono); font-size: 13px; background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; margin-top: 16px; overflow-x: auto; color: var(--body); line-height: 1.7; }
   pre .c { color: var(--muted); }
   pre .p { color: var(--accent); user-select: none; }
-
-  /* Demo */
-  .demo { background: var(--panel); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; margin-bottom: 32px; }
-  .stage { position: relative; height: 270px; display: grid; place-items: center; background:
-      radial-gradient(ellipse 60% 80% at 50% 110%, rgba(122,162,255,.14), transparent 70%); }
-  .menubar { position: absolute; top: 0; left: 0; right: 0; height: 28px; display: flex; justify-content: flex-end; align-items: center; gap: 14px; padding: 0 14px; background: rgba(255,255,255,.04); border-bottom: 1px solid var(--border); font-size: 12px; color: var(--muted); }
-  .menubar svg { width: 17px; height: 17px; color: var(--heading); }
-  .menu { position: absolute; top: 34px; right: 12px; width: 236px; background: rgba(28, 34, 52, .92); border: 1px solid rgba(255,255,255,.1); border-radius: 10px; padding: 5px; font-size: 13px; box-shadow: 0 18px 40px rgba(0,0,0,.45); backdrop-filter: blur(20px); }
-  .menu div { padding: 4px 10px; border-radius: 5px; color: var(--heading); display: flex; justify-content: space-between; }
-  .menu .dim { color: var(--muted); }
-  .menu .agent { padding-left: 20px; color: var(--muted); }
-  .menu .agent::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--green); position: relative; top: 7px; margin-right: 8px; flex: none; }
-  .menu .agent span:first-child { flex: 1; }
-  .menu hr { border: none; border-top: 1px solid rgba(255,255,255,.08); margin: 5px 8px; }
-  .laptop { position: absolute; left: 13%; bottom: 46px; width: 170px; }
-  .lid { height: 104px; border: 2px solid #3a4870; border-bottom: none; border-radius: 10px 10px 0 0; background: #0d1530; transform-origin: bottom; transition: transform .9s cubic-bezier(.6,0,.2,1), background .6s; display: grid; place-items: center; }
-  .lid .screen-text { font-family: var(--mono); font-size: 10px; color: var(--accent); opacity: 1; transition: opacity .4s; text-align: left; line-height: 1.6; }
-  .base { height: 10px; background: #3a4870; border-radius: 0 0 8px 8px; margin: 0 -14px; }
-  .laptop.closed .lid { transform: scaleY(.06); }
-  .laptop.closed .screen-text { opacity: 0; }
-  .laptop.asleep .lid { background: #070b18; }
-  .laptop-state { position: absolute; left: 13%; width: 170px; bottom: 16px; text-align: center; font-family: var(--mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--green); transition: color .4s; }
-  .laptop-state.sleep { color: var(--muted); }
-  .controls { display: flex; gap: 6px; padding: 12px; border-top: 1px solid var(--border); flex-wrap: wrap; }
-  .controls button { flex: 1; min-width: 130px; font: 500 12px var(--mono); letter-spacing: .06em; text-transform: uppercase; padding: 10px; border-radius: 8px; border: 1px solid var(--border); background: transparent; color: var(--muted); cursor: pointer; transition: all .2s; }
-  .controls button:hover { color: var(--heading); border-color: #2c3a62; }
-  .controls button[aria-pressed="true"] { color: var(--heading); background: rgba(122,162,255,.1); border-color: var(--accent-dim); }
-  .state-rows { display: grid; grid-template-columns: 1fr 1fr; border-top: 1px solid var(--border); }
-  .state-row { padding: 18px 20px; }
-  .state-row:first-child { border-right: 1px solid var(--border); }
-  .state-label { font: 500 11px var(--mono); letter-spacing: .14em; text-transform: uppercase; margin-bottom: 6px; }
-  .state-label.on { color: var(--green); }
-  .state-label.off { color: var(--muted); }
-  .state-row p { font-size: 13px; color: var(--muted); line-height: 1.55; }
 
   /* Agents */
   .agents { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
@@ -146,12 +113,6 @@
   @keyframes fadein { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
   @media (max-width: 560px) {
     .hero { padding-top: 56px; }
-    .stage { height: 250px; }
-    .stage .laptop { display: none; }
-    .laptop-state { left: 0; right: 0; width: auto; bottom: 18px; }
-    .menu { right: 8px; left: 8px; width: auto; }
-    .state-rows { grid-template-columns: 1fr; }
-    .state-row:first-child { border-right: none; border-bottom: 1px solid var(--border); }
   }
   @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
 </style>
@@ -162,7 +123,6 @@
 
   <section class="hero">
     <div class="brand-mark"><img src="icon.png" alt="Lidless app icon"></div>
-    <div class="hero-label">Cloud mode for local agents · Free</div>
     <h1>Close the Lid.<br><em>The Agent Keeps Going.</em></h1>
     <p class="hero-sub">
       Lidless keeps your Mac awake with the lid closed for exactly as long as your coding agent is working. No timer to guess, no external monitor, no Terminal commands. When the agent finishes, the Mac goes back to sleep.
@@ -176,43 +136,6 @@
 
   <section>
     <h2>What it does</h2>
-    <div class="demo" id="demo">
-      <div class="stage">
-        <div class="menubar" aria-hidden="true">
-          <span>Tue 9:41 PM</span>
-          <svg id="bar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></svg>
-        </div>
-        <div class="menu" aria-live="polite">
-          <div>Cloud Mode <span>✓</span></div>
-          <hr>
-          <div class="dim" id="menu-status">Awake until the agent finishes</div>
-          <div class="agent" id="menu-agent"><span>Claude Code</span><span id="menu-time">14m</span></div>
-          <hr>
-          <div>Claude Code Hooks <span>✓</span></div>
-          <div>Open at Login <span>✓</span></div>
-        </div>
-        <div class="laptop" id="laptop" aria-hidden="true">
-          <div class="lid"><div class="screen-text">&gt; refactor auth<br>  editing 14 files<br>  running tests…</div></div>
-          <div class="base"></div>
-        </div>
-        <div class="laptop-state" id="laptop-state">Awake</div>
-      </div>
-      <div class="controls" role="group" aria-label="Demo state">
-        <button type="button" data-step="0" aria-pressed="true">Agent working</button>
-        <button type="button" data-step="1" aria-pressed="false">Lid closed</button>
-        <button type="button" data-step="2" aria-pressed="false">Agent done</button>
-      </div>
-      <div class="state-rows">
-        <div class="state-row">
-          <div class="state-label on">Working</div>
-          <p>an agent is busy. Close the lid, the Mac stays awake.</p>
-        </div>
-        <div class="state-row">
-          <div class="state-label off">Done</div>
-          <p>the agent finished. Normal sleep is back, and a closed Mac sleeps on its own.</p>
-        </div>
-      </div>
-    </div>
     <p>
       Every keep-awake app asks the same question: for how long? 30 minutes, 2 hours, forever. The honest answer is "until Claude is done", and no timer knows when that is. Too short and the run dies halfway through a refactor. Too long and the Mac burns battery all night for nothing.
     </p>
@@ -276,7 +199,7 @@
       <li><p>Start an agent. Close the lid.</p></li>
     </ol>
     <div class="callout">
-      <strong>What Set Up changes, exactly.</strong> It adds <code>/etc/sudoers.d/lidless</code>, which lets your user run two commands without a password: <code>pmset -a disablesleep 1</code> and <code>pmset -a disablesleep 0</code>. Nothing else. It links the <code>lidless</code> command into <code>/usr/local/bin</code> and adds the Claude Code hooks, keeping a backup of your settings. <strong>Uninstall…</strong> in the menu removes all of it.
+      <strong>What Set Up changes, exactly.</strong> It adds <code>/etc/sudoers.d/lidless</code>, which lets your user run two commands without a password: <code>pmset -a disablesleep 1</code> and <code>pmset -a disablesleep 0</code>. Nothing else. It also links the <code>lidless</code> command into <code>/usr/local/bin</code>. The Claude Code hooks are added in the background whenever Claude Code is installed, with a backup of your settings kept first. <strong>Uninstall…</strong> in the menu removes all of it.
     </div>
     <div class="callout">
       <strong>Not on the App Store</strong> because App Store sandboxing blocks the system call lid-close sleep needs. Same reason tools like Lunar and BetterTouchTool ship outside it.
@@ -337,50 +260,5 @@
   </div>
 </footer>
 
-<script>
-  (function () {
-    var icons = {
-      bolt: '<path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/><path d="m13 11-2 3h3l-2 3" />',
-      cloud: '<path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/>'
-    };
-    var steps = [
-      { closed: false, asleep: false, status: 'Awake until the agent finishes', agent: true, label: 'Awake', icon: 'bolt' },
-      { closed: true, asleep: false, status: 'Awake until the agent finishes', agent: true, label: 'Closed · awake', icon: 'bolt' },
-      { closed: true, asleep: true, status: 'Waiting for an agent', agent: false, label: 'Asleep', icon: 'cloud' }
-    ];
-    var laptop = document.getElementById('laptop');
-    var state = document.getElementById('laptop-state');
-    var status = document.getElementById('menu-status');
-    var agent = document.getElementById('menu-agent');
-    var bar = document.getElementById('bar-icon');
-    var buttons = document.querySelectorAll('.controls button');
-    var current = 0, timer = null, minutes = 14;
-    function show(i) {
-      current = i;
-      var s = steps[i];
-      laptop.classList.toggle('closed', s.closed);
-      laptop.classList.toggle('asleep', s.asleep);
-      state.textContent = s.label;
-      state.classList.toggle('sleep', s.asleep);
-      status.textContent = s.status;
-      agent.style.display = s.agent ? '' : 'none';
-      bar.innerHTML = icons[s.icon];
-      buttons.forEach(function (b, j) { b.setAttribute('aria-pressed', String(j === i)); });
-    }
-    function autoplay() {
-      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-      timer = setInterval(function () {
-        if (current === 0) minutes += 1;
-        document.getElementById('menu-time').textContent = minutes + 'm';
-        show((current + 1) % steps.length);
-      }, 2800);
-    }
-    buttons.forEach(function (b) {
-      b.addEventListener('click', function () { clearInterval(timer); show(Number(b.dataset.step)); });
-    });
-    show(0);
-    autoplay();
-  })();
-</script>
 </body>
 </html>

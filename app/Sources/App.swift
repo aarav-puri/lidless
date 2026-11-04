@@ -75,7 +75,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         let menu = NSMenu()
         menu.delegate = self
         item.menu = menu
-        hooksInstalled = ClaudeHooks.isInstalled
         tick()
         timer = Timer.scheduledTimer(withTimeInterval: 3, repeats: true) { [weak self] _ in self?.tick() }
         timer?.tolerance = 1
@@ -102,7 +101,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     // MARK: Loop
 
     private func tick() {
-        hooksInstalled = ClaudeHooks.isInstalled
+        syncHooks()
         sources = armed ? monitor.sources(hooksInstalled: hooksInstalled) : []
 
         pausedReason = nil
@@ -136,14 +135,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     }
 
     private func updateIcon() {
-        let name: String
-        if !armed { name = "moon.zzz" }
-        else if pausedReason != nil { name = "cloud.slash" }
-        else if holding { name = "cloud.bolt.fill" }
-        else { name = "cloud" }
-        let image = NSImage(systemSymbolName: name, accessibilityDescription: "Lidless")
-        image?.isTemplate = true
-        item.button?.image = image
+        let state: StatusIcon.State
+        if !armed { state = .off }
+        else if pausedReason != nil { state = .paused }
+        else if holding { state = .working }
+        else { state = .waiting }
+        item.button?.image = StatusIcon.image(state)
         item.button?.toolTip = statusLine
     }
 
@@ -185,11 +182,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         }
         menu.addItem(.separator())
 
-        let hooks = NSMenuItem(title: "Claude Code Hooks", action: #selector(toggleHooks), keyEquivalent: "")
-        hooks.state = hooksInstalled ? .on : .off
-        hooks.target = self
-        menu.addItem(hooks)
-
         let login = NSMenuItem(title: "Open at Login", action: #selector(toggleLogin), keyEquivalent: "")
         login.state = SMAppService.mainApp.status == .enabled ? .on : .off
         login.target = self
@@ -221,13 +213,17 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         if armed && !Power.isAuthorized { authorize() }
     }
 
-    @objc private func toggleHooks() {
-        do {
-            try ClaudeHooks.set(installed: !hooksInstalled, binary: Bundle.main.executablePath ?? "")
-        } catch {
-            alert("Couldn't update ~/.claude/settings.json", "The file isn't plain JSON, so Lidless left it alone. Error: \(error.localizedDescription)")
+    /// Keeps the Claude Code hooks installed in the background, pointing at this copy of the app.
+    /// Runs every tick but only writes when they are missing or stale. Never touches a file it can't parse.
+    private var hookWriteFailed = false
+    private func syncHooks() {
+        let binary = Bundle.main.executablePath ?? ""
+        let claudeDir = ClaudeHooks.settingsURL.deletingLastPathComponent().path
+        guard !binary.isEmpty, FileManager.default.fileExists(atPath: claudeDir) else { hooksInstalled = false; return }
+        if !ClaudeHooks.isCurrent(binary: binary) && !hookWriteFailed {
+            do { try ClaudeHooks.set(installed: true, binary: binary) } catch { hookWriteFailed = true }
         }
-        tick()
+        hooksInstalled = ClaudeHooks.isInstalled
     }
 
     @objc private func toggleLogin() {
@@ -298,16 +294,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         a.informativeText = """
         Lidless keeps your Mac awake with the lid closed while an agent is working, and lets it sleep the moment the work is done.
 
-        Set Up asks for your password once to allow two commands: pmset disablesleep 1 and 0. It also adds Claude Code hooks so Lidless knows exactly when a turn starts and ends.
+        Set Up asks for your password once to allow two commands: pmset disablesleep 1 and 0. Claude Code turns are tracked automatically.
         """
         a.addButton(withTitle: "Set Up")
         a.addButton(withTitle: "Not Now")
         NSApp.activate(ignoringOtherApps: true)
         guard a.runModal() == .alertFirstButtonReturn else { return }
         authorize()
-        if FileManager.default.fileExists(atPath: ClaudeHooks.settingsURL.deletingLastPathComponent().path), !hooksInstalled {
-            toggleHooks()
-        }
         if SMAppService.mainApp.status != .enabled { try? SMAppService.mainApp.register() }
     }
 

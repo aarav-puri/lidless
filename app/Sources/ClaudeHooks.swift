@@ -19,6 +19,18 @@ enum ClaudeHooks {
 
     static var isInstalled: Bool { isInstalled(in: load()) }
 
+    /// Installed, and every hook points at this exact binary (the app may have moved).
+    static func isCurrent(binary: String) -> Bool {
+        let settings = load()
+        guard isInstalled(in: settings), let hooks = settings["hooks"] as? [String: Any] else { return false }
+        let expected = "'\(binary.replacingOccurrences(of: "'", with: "'\\''"))' hook "
+        return events.allSatisfy { ev in
+            ((hooks[ev.name] as? [[String: Any]]) ?? []).filter(isOurs).allSatisfy { group in
+                ((group["hooks"] as? [[String: Any]]) ?? []).allSatisfy { (($0["command"] as? String) ?? "").hasPrefix(expected) }
+            }
+        }
+    }
+
     static func isInstalled(in settings: [String: Any]) -> Bool {
         guard let hooks = settings["hooks"] as? [String: Any] else { return false }
         return events.allSatisfy { ev in

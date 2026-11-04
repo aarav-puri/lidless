@@ -19,6 +19,16 @@ enum CLI {
         case "status": return status()
         case "hook": return hook(args.dropFirst().first ?? "")
         case "--self-test": return SelfTest.run()
+        case "--render-icons":
+            for (name, st) in [("off", StatusIcon.State.off), ("waiting", .waiting), ("working", .working), ("paused", .paused)] {
+                let img = StatusIcon.image(st)
+                let rep = NSBitmapImageRep(bitmapDataPlanes: nil, pixelsWide: 160, pixelsHigh: 144, bitsPerSample: 8, samplesPerPixel: 4, hasAlpha: true, isPlanar: false, colorSpaceName: .deviceRGB, bytesPerRow: 0, bitsPerPixel: 0)!
+                NSGraphicsContext.saveGraphicsState(); NSGraphicsContext.current = NSGraphicsContext(bitmapImageRep: rep)
+                NSColor.white.setFill(); NSRect(x: 0, y: 0, width: 160, height: 144).fill()
+                img.draw(in: NSRect(x: 0, y: 0, width: 160, height: 144)); NSGraphicsContext.restoreGraphicsState()
+                try? rep.representation(using: .png, properties: [:])?.write(to: URL(fileURLWithPath: (args.count > 1 ? args[1] : ".") + "/status-\(name).png"))
+            }
+            return 0
         case "help", "--help", "-h": print(usage, terminator: ""); return 0
         default:
             if command.hasPrefix("-psn") || command.hasPrefix("-NS") || command.hasPrefix("-Apple") { return nil }
@@ -166,6 +176,7 @@ enum SelfTest {
         let merged = ClaudeHooks.merged(settings, binary: "/Applications/Lidless.app/Contents/MacOS/Lidless", install: true)
         let twice = ClaudeHooks.merged(merged, binary: "/Applications/Lidless.app/Contents/MacOS/Lidless", install: true)
         check(ClaudeHooks.isInstalled(in: merged), "hooks installed")
+        check(StatusIcon.image(.working).isTemplate, "status icon")
         check(((twice["hooks"] as? [String: Any])?["Stop"] as? [Any])?.count == 2, "stop hooks idempotent")
         check(((twice["hooks"] as? [String: Any])?["UserPromptSubmit"] as? [Any])?.count == 1, "prompt hook once")
         let removed = ClaudeHooks.merged(twice, binary: "x", install: false)
