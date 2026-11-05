@@ -9,10 +9,6 @@
 <meta property="og:description" content="Close the lid. The agent keeps going. When it finishes, the Mac sleeps.">
 <meta property="og:image" content="icon.png">
 <link rel="icon" href="icon.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600&display=swap" rel="stylesheet">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -36,9 +32,8 @@
     --accent: #7aa2ff;
     --accent-dim: #4d6fc4;
     --green: #4ade9b;
-    --font: 'Geist', ui-sans-serif, system-ui, -apple-system, sans-serif;
-    --mono: 'Geist Mono', ui-monospace, 'SF Mono', Menlo, monospace;
-    --display: 'Clash Display', 'Geist', ui-sans-serif, system-ui, sans-serif;
+    --font: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    --mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
     --max-w: 660px;
   }
   html {
@@ -52,25 +47,58 @@
   a:hover { text-decoration-color: var(--accent); }
 
   /* Hero */
-  .hero { padding: 84px 0 72px; text-align: center; animation: fadein .7s ease both; }
+  .hero { padding: 84px 0 72px; text-align: center; }
+  .hero > :not(h1) { animation: fadein .7s ease both; }
+  .hero .hero-sub { animation-delay: .45s; }
+  .hero .cta-row, .hero .cta-note { animation-delay: .6s; }
+  .hero .term { animation-delay: .8s; }
   .brand-mark img { width: 104px; height: 104px; display: block; margin: 0 auto 36px; filter: drop-shadow(0 18px 40px rgba(40, 80, 200, .35)); }
-  .hero h1 { font-size: clamp(2.3rem, 7vw, 3.5rem); font-weight: 800; line-height: 1.04; letter-spacing: -.035em; color: var(--heading); margin-bottom: 24px; }
+  .hero h1 { font-size: clamp(2.2rem, 6vw, 3.2rem); font-weight: 800; line-height: 1.08; letter-spacing: -.02em; color: var(--heading); margin-bottom: 24px; }
   .hero h1 em { font-style: normal; color: var(--accent); }
+  /* Text Reveal: each word rises out of its own clip while it sharpens from a blur */
+  .reveal .line { display: block; }
+  .reveal .clip { display: inline-block; overflow: hidden; padding: 0 .04em .12em; margin: 0 -.04em -.12em; vertical-align: top; }
+  .reveal .word { display: inline-block; animation: rise .9s cubic-bezier(.2, .7, .2, 1) both; animation-delay: var(--d, 0s); }
+  @keyframes rise { from { opacity: 0; transform: translateY(70%); filter: blur(10px); } to { opacity: 1; transform: none; filter: blur(0); } }
+  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+  /* Terminal: port of Magic UI's Terminal (typed commands, sequenced output) */
+  .term { margin: 56px auto 0; max-width: 520px; text-align: left; background: var(--panel); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; box-shadow: 0 24px 60px -24px rgba(0, 0, 0, .7); }
+  .term-bar { display: flex; align-items: center; gap: 7px; padding: 12px 14px; border-bottom: 1px solid var(--border); }
+  .term-bar i { width: 9px; height: 9px; border-radius: 50%; background: #ff5f57; }
+  .term-bar i:nth-child(2) { background: #febc2e; }
+  .term-bar i:nth-child(3) { background: #28c840; }
+  .term-bar span { margin-left: auto; font: 11px var(--mono); color: var(--muted); }
+  .term pre { margin: 0; border: 0; border-radius: 0; background: none; padding: 16px 18px 18px; font-size: 12.5px; line-height: 1.75; }
+  .term .ln { display: block; min-height: 1.75em; white-space: pre; }
+  .term .cmd::before { content: "$ "; color: var(--accent); }
+  .term .ok { color: var(--green); }
+  .term .dim { color: var(--muted); }
+  .term.armed .out { opacity: 0; transform: translateY(-4px); }
+  .term .out { transition: opacity .3s ease, transform .3s ease; }
+  .term .caret { display: inline-block; width: 7px; height: 1.1em; vertical-align: -2px; background: var(--accent); margin-left: 2px; animation: blink 1s steps(1) infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
   .hero-sub { font-size: 17px; line-height: 1.65; max-width: 520px; margin: 0 auto 38px; }
-  .cta-row { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+  .cta-row { display: flex; gap: 16px; justify-content: center; align-items: flex-start; flex-wrap: wrap; }
+  .cta-dl { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; }
+  .badges { display: flex; gap: 6px; }
+  .badges a { line-height: 0; }
   .cta-note { margin-top: 16px; font-family: var(--mono); font-size: 12px; color: var(--muted); }
-  .btn { display: inline-flex; align-items: center; gap: 8px; padding: 11px 24px; border-radius: 999px; font-size: 14px; font-weight: 600; text-decoration: none; transition: opacity .2s, border-color .2s, transform .2s; }
+  .btn { display: inline-flex; align-items: center; gap: 8px; padding: 11px 22px; border-radius: 10px; font-size: 14px; font-weight: 600; text-decoration: none; transition: opacity .2s, border-color .2s, transform .2s; }
   .btn-primary { background: var(--heading); color: #050913; border: 1px solid var(--heading); }
   .btn-primary:hover { opacity: .9; transform: translateY(-1px); }
   .btn-secondary { color: var(--body); border: 1px solid rgba(255,255,255,.16); }
   .btn-secondary:hover { border-color: rgba(255,255,255,.4); }
 
+  main { counter-reset: sec; }
   section { padding: 64px 0; }
   section + section { border-top: 1px solid var(--border); }
-  h2 { font-family: var(--display); font-size: clamp(28px, 4.6vw, 34px); font-weight: 600; line-height: 1.1; letter-spacing: -.01em; color: var(--heading); margin-bottom: 24px; }
+  h2 { counter-increment: sec; display: flex; align-items: center; gap: 12px; font-family: var(--mono); font-size: 11px; font-weight: 400; letter-spacing: .18em; text-transform: uppercase; color: var(--muted); margin-bottom: 32px; }
+  h2::before { content: counter(sec, decimal-leading-zero); color: var(--accent); letter-spacing: .06em; }
+  h2::after { content: ""; flex: 1; height: 1px; background: linear-gradient(90deg, var(--border), transparent); }
   h3 { font-size: 15px; font-weight: 700; color: var(--heading); letter-spacing: -.01em; margin: 30px 0 8px; }
   h3:first-of-type { margin-top: 0; }
-  p { font-size: 15px; line-height: 1.75; }
+  p { font-size: 15px; line-height: 1.7; }
   p + p { margin-top: 14px; }
   .lead { font-size: 17px; font-weight: 600; color: var(--heading); line-height: 1.55; margin-bottom: 18px; }
   code { font-family: var(--mono); font-size: 12.5px; background: var(--panel); border: 1px solid var(--border); border-radius: 5px; padding: 2px 6px; color: var(--accent); overflow-wrap: anywhere; }
@@ -121,54 +149,53 @@
 
 <div class="wrap">
 
-  <section class="hero">
+  <header class="hero">
     <div class="brand-mark"><img src="icon.png" alt="Lidless app icon"></div>
-    <h1>Close the Lid.<br><em>The Agent Keeps Going.</em></h1>
+    <h1 class="reveal">
+      <span class="sr-only">Close the Lid. The Agent Keeps Going.</span>
+      <span class="line" aria-hidden="true"><span class="clip"><span class="word" style="--d:.05s">Close</span></span> <span class="clip"><span class="word" style="--d:.13s">the</span></span> <span class="clip"><span class="word" style="--d:.21s">Lid.</span></span></span>
+      <em class="line" aria-hidden="true"><span class="clip"><span class="word" style="--d:.33s">The</span></span> <span class="clip"><span class="word" style="--d:.41s">Agent</span></span> <span class="clip"><span class="word" style="--d:.49s">Keeps</span></span> <span class="clip"><span class="word" style="--d:.57s">Going.</span></span></em>
+    </h1>
     <p class="hero-sub">
-      Lidless keeps your Mac awake with the lid closed for exactly as long as your coding agent is working. No timer to guess, no external monitor, no Terminal commands. When the agent finishes, the Mac goes back to sleep.
+      Lidless keeps your Mac awake with the lid closed while your coding agent is working. When it finishes, the Mac sleeps. No timer, no external monitor.
     </p>
     <div class="cta-row">
-      <a class="btn btn-primary" href="https://github.com/aarav-puri/lidless/releases/latest">Download free</a>
+      <div class="cta-dl">
+        <a class="btn btn-primary" href="https://github.com/aarav-puri/lidless/releases/latest">↓ Download free</a>
+        <div class="badges">
+          <a href="https://github.com/aarav-puri/lidless/releases/latest"><img src="https://img.shields.io/github/downloads/aarav-puri/lidless/total?color=666666&amp;labelColor=444444" alt="Downloads"></a>
+          <a href="https://github.com/aarav-puri/lidless"><img src="https://img.shields.io/github/stars/aarav-puri/lidless?style=social" alt="GitHub stars"></a>
+        </div>
+      </div>
       <a class="btn btn-secondary" href="https://github.com/aarav-puri/lidless">View source on GitHub →</a>
     </div>
     <p class="cta-note">macOS 13 or later · Apple Silicon and Intel</p>
-  </section>
+    <div class="term" id="term" role="img" aria-label="Terminal: lidless run wraps a test suite, lidless status shows lid sleep disabled while Claude Code and npm hold it">
+      <div class="term-bar"><i></i><i></i><i></i><span>zsh</span></div>
+<pre aria-hidden="true"><span class="ln cmd" data-type>lidless run -- npm run e2e &amp;</span><span class="ln cmd" data-type>lidless status</span><span class="ln out">Lidless app: running</span><span class="ln out">Lid sleep: <span class="ok">disabled (awake)</span></span><span class="ln out">  Claude Code  <span class="dim">pid 48211  since 2:14 PM</span></span><span class="ln out">  npm  <span class="dim">pid 48390  since 2:15 PM</span></span></pre>
+    </div>
+  </header>
+
+<main>
 
   <section>
     <h2>What it does</h2>
     <p>
-      Every keep-awake app asks the same question: for how long? 30 minutes, 2 hours, forever. The honest answer is "until Claude is done", and no timer knows when that is. Too short and the run dies halfway through a refactor. Too long and the Mac burns battery all night for nothing.
-    </p>
-    <p>
-      Lidless watches the agent instead of the clock. While an agent is working it holds Apple's own <code>pmset disablesleep</code>, the one setting that covers lid-close sleep. The moment the work stops, it lets go. There is no duration setting. That's the point.
-    </p>
-  </section>
-
-  <section>
-    <h2>Why it exists</h2>
-    <p class="lead">Cloud agents keep running when the laptop shuts. Local agents die the second the lid closes.</p>
-    <p>
-      Long agent runs are the new compile step. Start a task, grab the laptop, walk to the next meeting, and macOS puts the whole session to sleep before the hallway ends. People carry MacBooks around half-open to stop it. Paying for a cloud sandbox just to keep a process alive is overkill when the machine on the desk already has the repo, the keys and the toolchain.
-    </p>
-    <p>
-      Lidless gives local agents the one thing cloud agents have: they keep working when nobody is watching. Closing the lid to sleep the Mac still works the rest of the time.
+      Keep-awake apps make you pick a duration. Lidless watches the agent instead. While an agent is working it holds <code>pmset disablesleep</code>, the setting that covers lid-close sleep. When the work stops, it lets go.
     </p>
   </section>
 
   <section>
     <h2>How it knows</h2>
     <h3>Claude Code and Codex: exact</h3>
-    <p>Lidless adds hooks to <code>~/.claude/settings.json</code> and <code>~/.codex/hooks.json</code> in the background. <code>UserPromptSubmit</code> starts a hold; <code>Stop</code>, <code>SessionEnd</code> and, for Codex, <code>Interrupt</code> end it. Accurate to the second, across every session and every terminal. Codex asks to review new hooks once the next time it opens. Until then, Codex is tracked by activity.</p>
+    <p>Lidless adds hooks to <code>~/.claude/settings.json</code> and <code>~/.codex/hooks.json</code> in the background. <code>UserPromptSubmit</code> starts a hold; <code>Stop</code>, <code>SessionEnd</code> and, for Codex, <code>Interrupt</code> end it. Works across every session and terminal. Codex asks to review new hooks once the next time it opens. Until then, Codex is tracked by activity.</p>
     <h3>Other agents: by activity</h3>
     <p>Everything else is detected by process. An agent counts as working while it or anything it spawned is using CPU. Lidless waits two quiet minutes before letting go, so a slow model response is not mistaken for done.</p>
     <div class="agents">
       <span>Claude Code</span><span>Codex</span><span>Gemini CLI</span><span>Aider</span><span>OpenCode</span><span>Cursor Agent</span><span>Goose</span><span>Amp</span><span>Qwen Code</span><span>Crush</span><span>Droid</span><span>Copilot CLI</span>
     </div>
     <h3>Anything else: wrap it</h3>
-    <p>Long build, test suite, training run, a script that babysits an agent. Put <code>lidless run</code> in front and the Mac stays awake until it exits.</p>
-<pre><span class="p">$ </span>lidless run -- npm run e2e
-<span class="p">$ </span>lidless run -- ./agent-loop.sh --overnight
-<span class="p">$ </span>lidless status</pre>
+    <p>Put <code>lidless run</code> in front of any command and the Mac stays awake until it exits. <code>lidless status</code> shows what is holding it.</p>
   </section>
 
   <section>
@@ -188,7 +215,7 @@
         </tbody>
       </table>
     </div>
-    <p class="note">Amphetamine is excellent and does far more. Cloud agents are great when the work belongs in the cloud. Lidless isn't trying to replace either. It does one thing: keeps a closed Mac awake while an agent works, then lets it sleep. That's it.</p>
+    <p class="note">Amphetamine does far more. Lidless does one thing: keeps a closed Mac awake while an agent works, then lets it sleep.</p>
   </section>
 
   <section>
@@ -209,10 +236,7 @@
   <section>
     <h2>Safety</h2>
     <p>
-      Use this tool AT YOUR OWN RISK. The command Lidless runs is Apple's own, and it only runs while an agent is actually working. No guarantees beyond that.
-    </p>
-    <p>
-      Two rules: <strong>keep the Mac on a hard surface</strong> while an agent runs, and <strong>never put it in a bag</strong> mid-run. A closed laptop in a bag with sleep disabled will overheat.
+      Use at your own risk. Two rules: <strong>keep the Mac on a hard surface</strong> while an agent runs, and <strong>never put it in a bag</strong> mid-run. It will overheat.
     </p>
     <p>
       Lidless lets go on its own when the battery drops to 20% on battery power, when macOS reports a critical thermal state, or when the app quits. Plug in for long runs.
@@ -223,28 +247,28 @@
     <h2>FAQ</h2>
 
     <h3>Can a timer be set?</h3>
-    <p>No. The agent decides. When it is working the Mac is awake, when it is done the Mac can sleep. Anything that isn't an agent can be wrapped with <code>lidless run</code>.</p>
+    <p>No. The agent decides. For anything else, use <code>lidless run</code>.</p>
 
     <h3>Does it work without an external monitor?</h3>
-    <p>Yes. That is the whole job. Most keep-awake apps hold display or idle sleep, which closing the lid ignores. <code>pmset disablesleep</code> is the switch for lid-close sleep itself.</p>
+    <p>Yes. <code>pmset disablesleep</code> covers lid-close sleep directly.</p>
 
     <h3>What happens when the agent finishes with the lid closed?</h3>
-    <p>Lidless restores normal sleep and puts the Mac to sleep within a few seconds, unless an external display is attached. Open the lid later and the finished work is waiting.</p>
+    <p>Lidless restores normal sleep and puts the Mac to sleep within a few seconds, unless an external display is attached.</p>
 
     <h3>What if Claude Code is waiting on a permission prompt?</h3>
     <p>A permission prompt is not a finished turn, so the Mac stays awake waiting for an answer. For unattended runs, use auto mode or allow rules so nothing blocks. If a session goes fully quiet for 15 minutes without finishing, Lidless lets it go anyway.</p>
 
-
     <h3>Does it drain battery faster?</h3>
-    <p>Only while an agent is working, and then about as much as using the Mac with the lid open. Plug in when you can.</p>
+    <p>Only while an agent is working, about the same as using it with the lid open.</p>
 
     <h3>Does Lidless send any data anywhere?</h3>
-    <p>No. No network access, no telemetry, no analytics, no account. It reads the local process list and runs <code>pmset</code>.</p>
+    <p>No. No network access, no telemetry, no account.</p>
 
     <h3>Which Macs and macOS versions?</h3>
     <p>macOS 13 Ventura and later, including Tahoe. Universal binary for Apple Silicon and Intel.</p>
   </section>
 
+</main>
 </div>
 
 <footer>
@@ -257,6 +281,44 @@
     </div>
   </div>
 </footer>
+
+<script>
+(() => {
+  const term = document.getElementById('term');
+  if (!term || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const lines = [...term.querySelectorAll('.ln')];
+  const typed = lines.filter(l => l.hasAttribute('data-type'));
+  const full = typed.map(l => l.textContent);
+  typed.forEach(l => { l.textContent = ''; });
+  term.classList.add('armed');
+  const wait = ms => new Promise(r => setTimeout(r, ms));
+  const caret = document.createElement('span');
+  caret.className = 'caret';
+  async function play() {
+    await wait(500);
+    for (const line of lines) {
+      if (line.hasAttribute('data-type')) {
+        const text = full[typed.indexOf(line)];
+        line.append(caret);
+        for (let i = 1; i <= text.length; i++) {
+          line.textContent = text.slice(0, i);
+          line.append(caret);
+          await wait(38);
+        }
+        await wait(380);
+        caret.remove();
+      } else {
+        line.classList.add('shown');
+        line.style.opacity = 1; line.style.transform = 'none';
+        await wait(160);
+      }
+    }
+  }
+  new IntersectionObserver((entries, obs) => {
+    if (entries.some(e => e.isIntersecting)) { obs.disconnect(); play(); }
+  }, { threshold: .3 }).observe(term);
+})();
+</script>
 
 </body>
 </html>
