@@ -142,7 +142,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     private var statusLine: String {
         if !Power.isAuthorized { return "Needs permission to keep the lid awake" }
         if let p = pausedReason { return p }
-        if holding { return sources.count == 1 ? "Awake until the agent finishes" : "Awake until \(sources.count) agents finish" }
+        if holding { return sources.count == 1 ? "Awake until your agent finishes" : "Awake until \(sources.count) agents finish" }
         return "Waiting for an agent"
     }
 

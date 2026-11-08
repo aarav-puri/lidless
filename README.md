@@ -7,7 +7,7 @@
   </picture>
 </a>
 
-### Close the lid. The agent keeps going.
+### Close the lid. Your agent keeps going.
 
 Lidless keeps your Mac awake with the lid closed for exactly as long as your coding agent is working, then lets it sleep. No timer to pick.
 
@@ -23,13 +23,13 @@ Lidless keeps your Mac awake with the lid closed for exactly as long as your cod
 ---
 
 <p align="center">
-  <img src="docs/website.png" alt="The Lidless website: Close the Lid. The Agent Keeps Going." width="820">
+  <img src="docs/website.png" alt="The Lidless website: Close the Lid. Your Agent Keeps Going." width="820">
 </p>
 
 ## Features
 
 - **Awake with the lid closed** while an agent works. No external monitor, no Terminal commands.
-- **Ends when the agent ends.** The moment the last agent finishes, normal sleep is back. If the lid is shut, the Mac sleeps within seconds.
+- **Ends when your agent ends.** The moment the last agent finishes, normal sleep is back. If the lid is shut, the Mac sleeps within seconds.
 - **Exact for Claude Code and Codex.** Hooks are added in the background and report every turn's start and finish.
 - **Works with the rest by activity:** Gemini CLI, Aider, OpenCode, Cursor Agent, Goose, Amp, Qwen Code, Crush, Droid, Copilot CLI.
 - **Wrap anything else** with `lidless run -- <command>`.
@@ -41,7 +41,7 @@ Lidless keeps your Mac awake with the lid closed for exactly as long as your cod
 | --- | --- | --- |
 | Claude Code | `UserPromptSubmit` starts, `Stop` and `SessionEnd` end (`~/.claude/settings.json`) | Exact |
 | Codex CLI | `UserPromptSubmit` starts, `Stop`, `Interrupt` and `SessionEnd` end (`~/.codex/hooks.json`) | Exact, after Codex's one-time hook review |
-| Everything else | The agent or anything it spawned is using CPU; released after two quiet minutes | Close |
+| Everything else | Your agent or anything it spawned is using CPU; released after two quiet minutes | Close |
 | `lidless run -- <cmd>` | The command is running | Exact |
 
 The menubar icon is a closed laptop:

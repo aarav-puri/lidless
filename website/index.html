@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#000000">
 <meta name="color-scheme" content="dark">
 <meta property="og:title" content="Lidless - Keep Agents Running With the Lid Closed">
-<meta property="og:description" content="Close the lid. The agent keeps going. When it finishes, the Mac sleeps.">
+<meta property="og:description" content="Close the lid. Your agent keeps going. When it finishes, the Mac sleeps.">
 <meta property="og:image" content="icon.png">
 <link rel="icon" href="icon.png">
 <link rel="apple-touch-icon" href="icon.png">
@@ -218,9 +218,9 @@
   <header class="hero wrap">
     <img class="logo fade" style="--d:0s" src="logo.png" width="440" height="188" alt="Lidless logo: a closed laptop made of glass, light leaking from the seam">
     <h1 class="reveal">
-      <span class="sr-only">Close the Lid. The Agent Keeps Going.</span>
+      <span class="sr-only">Close the Lid. Your Agent Keeps Going.</span>
       <span class="line" aria-hidden="true"><span class="clip"><span class="word" style="--d:.05s">Close</span></span> <span class="clip"><span class="word" style="--d:.13s">the</span></span> <span class="clip"><span class="word" style="--d:.21s">Lid.</span></span></span>
-      <span class="line accent" aria-hidden="true"><span class="clip"><span class="word" style="--d:.33s">The</span></span> <span class="clip"><span class="word" style="--d:.41s">Agent</span></span> <span class="clip"><span class="word" style="--d:.49s">Keeps</span></span> <span class="clip"><span class="word" style="--d:.57s">Going.</span></span></span>
+      <span class="line accent" aria-hidden="true"><span class="clip"><span class="word" style="--d:.33s">Your</span></span> <span class="clip"><span class="word" style="--d:.41s">Agent</span></span> <span class="clip"><span class="word" style="--d:.49s">Keeps</span></span> <span class="clip"><span class="word" style="--d:.57s">Going.</span></span></span>
     </h1>
     <p class="sub fade" style="--d:.6s">Lidless keeps your Mac awake with the lid closed while your coding agent is working. When it finishes, the Mac sleeps.</p>
     <div class="cta fade" style="--d:.75s">
@@ -242,7 +242,7 @@
       <p class="eyebrow">What it does</p>
       <h2>No Timer.<br><span class="accent">Your Agent Decides.</span></h2>
       <div class="body">
-        <p>Keep-awake apps make you pick a duration. Lidless watches the agent instead. While an agent is working it holds <code>pmset disablesleep</code>, the setting that covers lid-close sleep. When the work stops, it lets go.</p>
+        <p>Keep-awake apps make you pick a duration. Lidless watches your agent instead. While an agent is working it holds <code>pmset disablesleep</code>, the setting that covers lid-close sleep. When the work stops, it lets go.</p>
       </div>
     </div>
   </section>
@@ -272,7 +272,7 @@
         <thead><tr><th></th><th>Lidless</th><th>Amphetamine</th><th>caffeinate</th><th>Cloud agents</th></tr></thead>
         <tbody>
           <tr><td>Awake with lid closed</td><td class="y">✓</td><td><span class="w">buried</span></td><td class="n">✗</td><td class="y">✓</td></tr>
-          <tr><td>Ends when the agent ends</td><td class="y">✓</td><td class="n">✗</td><td><span class="w">-w pid</span></td><td class="y">✓</td></tr>
+          <tr><td>Ends when your agent ends</td><td class="y">✓</td><td class="n">✗</td><td><span class="w">-w pid</span></td><td class="y">✓</td></tr>
           <tr><td>Sleeps once done, lid shut</td><td class="y">✓</td><td class="n">✗</td><td class="n">✗</td><td>-</td></tr>
           <tr><td>No timer to pick</td><td class="y">✓</td><td class="n">✗</td><td class="n">✗</td><td class="y">✓</td></tr>
           <tr><td>Your machine, your setup</td><td class="y">✓</td><td class="y">✓</td><td class="y">✓</td><td class="n">✗</td></tr>
@@ -316,9 +316,9 @@
       <h2>Questions About<br><span class="accent">Your Agent.</span></h2>
     </div>
     <div class="faq in">
-      <details><summary>Can a timer be set?</summary><p>No. The agent decides. For anything else, use <code>lidless run</code>.</p></details>
+      <details><summary>Can a timer be set?</summary><p>No. Your agent decides. For anything else, use <code>lidless run</code>.</p></details>
       <details><summary>Does it work without an external monitor?</summary><p>Yes. <code>pmset disablesleep</code> covers lid-close sleep directly.</p></details>
-      <details><summary>What happens when the agent finishes with the lid closed?</summary><p>Lidless restores normal sleep and puts the Mac to sleep within a few seconds, unless an external display is attached.</p></details>
+      <details><summary>What happens when your agent finishes with the lid closed?</summary><p>Lidless restores normal sleep and puts the Mac to sleep within a few seconds, unless an external display is attached.</p></details>
       <details><summary>What if Claude Code is waiting on a permission prompt?</summary><p>A permission prompt is not a finished turn, so the Mac stays awake waiting for an answer. For unattended runs, use auto mode or allow rules so nothing blocks. If a session goes fully quiet for 15 minutes without finishing, Lidless lets it go anyway.</p></details>
       <details><summary>Does it drain battery faster?</summary><p>Only while an agent is working, about the same as using it with the lid open.</p></details>
       <details><summary>Does Lidless send any data anywhere?</summary><p>No. No network access, no telemetry, no account.</p></details>
