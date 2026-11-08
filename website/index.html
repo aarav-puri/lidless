@@ -163,13 +163,11 @@
   .faq p { color: var(--ink-2); font-size: 17px; padding: 0 40px 24px 0; max-width: 62ch; }
 
 
-  /* Section labels keep the original numbered mono style */
-  main { counter-reset: sec; }
-  .eyebrow { counter-increment: sec; display: inline-flex; align-items: center; gap: 10px; font: 400 12px var(--mono); letter-spacing: .18em; text-transform: uppercase; color: var(--ink-2); margin-bottom: 18px; }
-  .eyebrow::before { content: counter(sec, decimal-leading-zero); color: var(--blue-hi); letter-spacing: .06em; }
+  /* Section labels: small gray sans, like the reference */
+  .eyebrow { font-size: 17px; font-weight: 600; letter-spacing: -.01em; color: var(--ink-2); margin-bottom: 10px; }
   .hero h1 .accent, .ch h2 .accent { color: var(--blue-hi); }
   .hero .sub { max-width: 640px; margin-left: auto; margin-right: auto; }
-  .cta-note { margin-top: 18px; font: 12px var(--mono); letter-spacing: 0; color: var(--ink-2); }
+  .cta-note { margin-top: 18px; font-size: 15px; color: var(--ink-2); }
   .ch .body p + p { margin-top: 14px; }
   .tiles.text > div { justify-content: flex-start; min-height: 0; }
   .tiles h3 { font-size: clamp(20px, 2vw, 24px); line-height: 1.15; font-weight: 600; letter-spacing: -.02em; margin-bottom: 10px; }
