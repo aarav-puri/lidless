@@ -68,7 +68,7 @@
   /* Hero */
   .hero { padding-top: calc(env(safe-area-inset-top, 0px) + 128px); text-align: center; }
   .hero .logo { width: min(220px, 52vw); margin: 0 auto 8px; animation: float 7s ease-in-out infinite; }
-  .hero h1 { font-size: clamp(48px, 8.4vw, 96px); line-height: 1.04; letter-spacing: -.035em; }
+  .hero h1 { font-size: clamp(40px, 7vw, 80px); line-height: 1.04; letter-spacing: -.035em; }
   .sub { font-size: clamp(19px, 2.2vw, 28px); line-height: 1.2; font-weight: 600; color: var(--ink-2); letter-spacing: -.01em; margin-top: 16px; text-wrap: balance; }
   .cta { display: flex; justify-content: center; align-items: center; gap: 22px; flex-wrap: wrap; margin-top: 36px; }
   .cta small { font-size: 15px; color: var(--ink-2); }
@@ -163,6 +163,22 @@
   .faq details[open] summary::after { transform: translateY(-50%) rotate(45deg); }
   .faq p { color: var(--ink-2); font-size: 17px; padding: 0 40px 24px 0; max-width: 62ch; }
 
+
+  /* Section labels keep the original numbered mono style */
+  main { counter-reset: sec; }
+  .eyebrow { counter-increment: sec; display: inline-flex; align-items: center; gap: 10px; font: 400 12px var(--mono); letter-spacing: .18em; text-transform: uppercase; color: var(--ink-2); margin-bottom: 18px; }
+  .eyebrow::before { content: counter(sec, decimal-leading-zero); color: var(--blue-hi); letter-spacing: .06em; }
+  .hero h1 .accent, .ch h2 .accent { color: var(--blue-hi); }
+  .hero .sub { max-width: 640px; margin-left: auto; margin-right: auto; }
+  .cta-note { margin-top: 18px; font: 12px var(--mono); letter-spacing: 0; color: var(--ink-2); }
+  .ch .body p + p { margin-top: 14px; }
+  .tiles.text > div { justify-content: flex-start; min-height: 0; }
+  .tiles h3 { font-size: clamp(20px, 2vw, 24px); line-height: 1.15; font-weight: 600; letter-spacing: -.02em; margin-bottom: 10px; }
+  .tiles p { color: var(--ink-2); font-size: 16px; }
+  .tiles p strong { color: var(--ink); font-weight: 600; }
+  .notes strong.lead { display: inline; font-size: inherit; margin: 0; }
+  .note { max-width: 62ch; margin-left: auto; margin-right: auto; }
+
   /* Closing */
   .closing { text-align: center; padding-bottom: clamp(100px, 12vw, 160px); }
   .closing .logo { width: min(180px, 46vw); margin: 0 auto 12px; }
@@ -192,8 +208,9 @@
 
 <nav class="nav" aria-label="Main"><div class="wrap">
   <a class="brand" href="#top"><img src="icon.png" alt="">Lidless</a>
-  <a class="l" href="#how">How it works</a>
-  <a class="l" href="#compare">Compare</a>
+  <a class="l" href="#what">What it does</a>
+  <a class="l" href="#how">How it knows</a>
+  <a class="l" href="#alternatives">Alternatives</a>
   <a class="l" href="#install">Install</a>
   <a class="l" href="#faq">FAQ</a>
   <a class="btn sm" href="https://github.com/aarav-puri/lidless/releases/latest">Download</a>
@@ -204,19 +221,20 @@
   <header class="hero wrap">
     <img class="logo fade" style="--d:0s" src="logo.png" width="440" height="188" alt="Lidless logo: a closed laptop made of glass, light leaking from the seam">
     <h1 class="reveal">
-      <span class="sr-only">Close the lid. The agent keeps going.</span>
-      <span class="line" aria-hidden="true"><span class="clip"><span class="word" style="--d:.05s">Close</span></span> <span class="clip"><span class="word" style="--d:.13s">the</span></span> <span class="clip"><span class="word" style="--d:.21s">lid.</span></span></span>
-      <span class="line" aria-hidden="true"><span class="clip"><span class="word" style="--d:.33s">It</span></span> <span class="clip"><span class="word" style="--d:.41s">keeps</span></span> <span class="clip"><span class="word" style="--d:.49s">going.</span></span></span>
+      <span class="sr-only">Close the Lid. The Agent Keeps Going.</span>
+      <span class="line" aria-hidden="true"><span class="clip"><span class="word" style="--d:.05s">Close</span></span> <span class="clip"><span class="word" style="--d:.13s">the</span></span> <span class="clip"><span class="word" style="--d:.21s">Lid.</span></span></span>
+      <span class="line accent" aria-hidden="true"><span class="clip"><span class="word" style="--d:.33s">The</span></span> <span class="clip"><span class="word" style="--d:.41s">Agent</span></span> <span class="clip"><span class="word" style="--d:.49s">Keeps</span></span> <span class="clip"><span class="word" style="--d:.57s">Going.</span></span></span>
     </h1>
-    <p class="sub fade" style="--d:.6s">Your Mac stays awake while your coding agent works. When it finishes, the Mac sleeps.</p>
+    <p class="sub fade" style="--d:.6s">Lidless keeps your Mac awake with the lid closed while your coding agent is working. When it finishes, the Mac sleeps.</p>
     <div class="cta fade" style="--d:.75s">
-      <a class="btn" href="https://github.com/aarav-puri/lidless/releases/latest">Download for Mac</a>
-      <small>Free · macOS 13 or later</small>
+      <a class="btn" href="https://github.com/aarav-puri/lidless/releases/latest">↓ Download free</a>
+      <a class="btn ghost" href="https://github.com/aarav-puri/lidless">View source on GitHub →</a>
     </div>
     <div class="badges fade" style="--d:.9s">
       <a href="https://github.com/aarav-puri/lidless/releases/latest"><img src="https://img.shields.io/github/downloads/aarav-puri/lidless/total?color=1c1c1e&amp;labelColor=2c2c2e" alt="Downloads"></a>
       <a href="https://github.com/aarav-puri/lidless"><img src="https://img.shields.io/github/stars/aarav-puri/lidless?style=social" alt="GitHub stars"></a>
     </div>
+    <p class="cta-note fade" style="--d:.9s">macOS 13 or later · Apple Silicon and Intel</p>
 
     <div class="stage fade" style="--d:1s">
       <div class="term glass" id="term" role="img" aria-label="Terminal: lidless run wraps a test suite, lidless status shows lid sleep disabled while Claude Code and npm hold it">
@@ -226,38 +244,35 @@
     </div>
   </header>
 
+  <section class="ch wrap" id="what">
+    <div class="head in">
+      <p class="eyebrow">What it does</p>
+      <h2>No Timer.<br><span class="accent">Your Agent Decides.</span></h2>
+      <div class="body">
+        <p>Keep-awake apps make you pick a duration. Lidless watches the agent instead. While an agent is working it holds <code>pmset disablesleep</code>, the setting that covers lid-close sleep. When the work stops, it lets go.</p>
+      </div>
+    </div>
+  </section>
+
   <section class="ch wrap" id="how">
     <div class="head in">
-      <h2>No timer.<br><span class="blue">It watches the agent.</span></h2>
-      <p class="body">Keep-awake apps make you pick a duration. Lidless holds <code>pmset disablesleep</code>, the setting that covers lid-close sleep, while an agent is working, and lets go when it stops.</p>
+      <p class="eyebrow">How it knows</p>
+      <h2>Your Agent Starts.<br><span class="accent">Lidless Knows.</span></h2>
     </div>
-    <div class="tiles lit in">
-      <div class="glass blue"><span class="k">Hooks</span><b>Claude Code and Codex. Exact.</b><span>Every turn's start and finish, across every session and terminal.</span></div>
-      <div class="glass"><span class="k">Activity</span><b>Everything else. Close.</b><span>Working while it or anything it spawned uses CPU. Two quiet minutes to let go.</span></div>
-      <div class="glass"><span class="k">Wrap</span><b><code>lidless run</code></b><span>Put it in front of any command. Awake until it exits.</span></div>
+    <div class="tiles text lit in">
+      <div class="glass"><h3>Claude Code and Codex: exact</h3><p>Lidless adds hooks to <code>~/.claude/settings.json</code> and <code>~/.codex/hooks.json</code> in the background. <code>UserPromptSubmit</code> starts a hold; <code>Stop</code>, <code>SessionEnd</code> and, for Codex, <code>Interrupt</code> end it. Works across every session and terminal. Codex asks to review new hooks once the next time it opens. Until then, Codex is tracked by activity.</p></div>
+      <div class="glass"><h3>Other agents: by activity</h3><p>Everything else is detected by process. An agent counts as working while it or anything it spawned is using CPU. Lidless waits two quiet minutes before letting go, so a slow model response is not mistaken for done.</p></div>
+      <div class="glass"><h3>Anything else: wrap it</h3><p>Put <code>lidless run</code> in front of any command and the Mac stays awake until it exits. <code>lidless status</code> shows what is holding it.</p></div>
     </div>
     <div class="chips in">
       <span class="glass">Claude Code</span><span class="glass">Codex</span><span class="glass">Gemini CLI</span><span class="glass">Aider</span><span class="glass">OpenCode</span><span class="glass">Cursor Agent</span><span class="glass">Goose</span><span class="glass">Amp</span><span class="glass">Qwen Code</span><span class="glass">Crush</span><span class="glass">Droid</span><span class="glass">Copilot CLI</span>
     </div>
   </section>
 
-  <section class="ch wrap">
+  <section class="ch wrap" id="alternatives">
     <div class="head in">
-      <h2>When it's done,<br>it sleeps.</h2>
-      <p class="sub">Lid shut, agent finished: the Mac goes to sleep within seconds.</p>
-    </div>
-    <div class="tiles lit in">
-      <div class="glass"><b>20%</b><span>Lets go on battery power at 20%. Plug in for long runs.</span></div>
-      <div class="glass"><b>Too hot</b><span>Lets go when macOS reports a critical thermal state.</span></div>
-      <div class="glass blue"><b>No network</b><span>No telemetry, no account. Nothing leaves your Mac.</span></div>
-    </div>
-    <p class="note in">Keep the Mac on a hard surface while an agent runs, and never put it in a bag mid-run.</p>
-  </section>
-
-  <section class="ch wrap" id="compare">
-    <div class="head in">
-      <h2>One thing, done right.</h2>
-      <p class="sub">Amphetamine does far more. Lidless just keeps a closed Mac awake while an agent works.</p>
+      <p class="eyebrow">Alternatives</p>
+      <h2>One Thing,<br><span class="accent">Done for Your Agent.</span></h2>
     </div>
     <div class="table glass in">
       <table aria-label="Feature comparison">
@@ -272,32 +287,46 @@
         </tbody>
       </table>
     </div>
+    <p class="note in">Amphetamine does far more. Lidless does one thing: keeps a closed Mac awake while an agent works, then lets it sleep.</p>
   </section>
 
   <section class="ch wrap" id="install">
     <div class="head in">
-      <h2>Set up once.</h2>
-      <p class="sub">Three steps. One password prompt.</p>
+      <p class="eyebrow">Install</p>
+      <h2>Set Up Once.<br><span class="accent">Your Agent Does the Rest.</span></h2>
     </div>
-    <div class="tiles lit in">
-      <div class="glass"><span class="k">1</span><b>Download</b><span><code>Lidless.zip</code> from <a href="https://github.com/aarav-puri/lidless/releases/latest">GitHub Releases</a>. Drag it to Applications.</span></div>
-      <div class="glass"><span class="k">2</span><b>Set Up</b><span>Open it and click Set Up. macOS asks for your password once.</span></div>
-      <div class="glass blue"><span class="k">3</span><b>Close the lid</b><span>Start an agent. Walk away.</span></div>
+    <div class="tiles text lit in">
+      <div class="glass"><span class="k">1</span><p style="margin-top:28px">Download <code>Lidless.zip</code> from <a href="https://github.com/aarav-puri/lidless/releases/latest">GitHub Releases</a> and drag Lidless to Applications.</p></div>
+      <div class="glass"><span class="k">2</span><p style="margin-top:28px">Open it and click <strong>Set Up</strong>. macOS asks for your password once.</p></div>
+      <div class="glass"><span class="k">3</span><p style="margin-top:28px">Start an agent. Close the lid.</p></div>
     </div>
     <div class="notes in">
-      <div class="glass"><strong>What Set Up changes</strong>It adds <code>/etc/sudoers.d/lidless</code>, letting your user run <code>pmset -a disablesleep 1</code> and <code>0</code> without a password. Nothing else. It links <code>lidless</code> into <code>/usr/local/bin</code> and adds hooks for Claude Code and Codex, backing up each config first. Uninstall in the menu removes all of it.</div>
-      <div class="glass"><strong>Not on the App Store</strong>App Store sandboxing blocks the system call lid-close sleep needs. Same reason tools like Lunar and BetterTouchTool ship outside it.</div>
+      <div class="glass"><strong class="lead">What Set Up changes, exactly.</strong> It adds <code>/etc/sudoers.d/lidless</code>, which lets your user run two commands without a password: <code>pmset -a disablesleep 1</code> and <code>pmset -a disablesleep 0</code>. Nothing else. It also links the <code>lidless</code> command into <code>/usr/local/bin</code>. Hooks for Claude Code and Codex are added in the background when either is installed, with a backup of each config file kept first. <strong class="lead">Uninstall</strong> in the menu removes all of it.</div>
+      <div class="glass"><strong class="lead">Not on the App Store</strong> because App Store sandboxing blocks the system call lid-close sleep needs. Same reason tools like Lunar and BetterTouchTool ship outside it.</div>
+    </div>
+  </section>
+
+  <section class="ch wrap" id="safety">
+    <div class="head in">
+      <p class="eyebrow">Safety</p>
+      <h2>Your Agent Finishes.<br><span class="accent">Your Mac Sleeps.</span></h2>
+      <div class="body">
+        <p>Use at your own risk. Two rules: <strong>keep the Mac on a hard surface</strong> while an agent runs, and <strong>never put it in a bag</strong> mid-run. It will overheat.</p>
+        <p>Lidless lets go on its own when the battery drops to 20% on battery power, when macOS reports a critical thermal state, or when the app quits. Plug in for long runs.</p>
+      </div>
     </div>
   </section>
 
   <section class="ch wrap" id="faq">
-    <div class="head in"><h2>Questions</h2></div>
+    <div class="head in">
+      <p class="eyebrow">FAQ</p>
+      <h2>Questions About<br><span class="accent">Your Agent.</span></h2>
+    </div>
     <div class="faq in">
       <details><summary>Can a timer be set?</summary><p>No. The agent decides. For anything else, use <code>lidless run</code>.</p></details>
       <details><summary>Does it work without an external monitor?</summary><p>Yes. <code>pmset disablesleep</code> covers lid-close sleep directly.</p></details>
       <details><summary>What happens when the agent finishes with the lid closed?</summary><p>Lidless restores normal sleep and puts the Mac to sleep within a few seconds, unless an external display is attached.</p></details>
       <details><summary>What if Claude Code is waiting on a permission prompt?</summary><p>A permission prompt is not a finished turn, so the Mac stays awake waiting for an answer. For unattended runs, use auto mode or allow rules so nothing blocks. If a session goes fully quiet for 15 minutes without finishing, Lidless lets it go anyway.</p></details>
-      <details><summary>Codex asked me to review hooks. Is that expected?</summary><p>Yes. Codex asks once, the next time it opens after Lidless adds its hooks. Until you approve, Codex is tracked by activity.</p></details>
       <details><summary>Does it drain battery faster?</summary><p>Only while an agent is working, about the same as using it with the lid open.</p></details>
       <details><summary>Does Lidless send any data anywhere?</summary><p>No. No network access, no telemetry, no account.</p></details>
       <details><summary>Which Macs and macOS versions?</summary><p>macOS 13 Ventura and later, including Tahoe. Universal binary for Apple Silicon and Intel.</p></details>
@@ -307,12 +336,12 @@
   <section class="ch wrap closing">
     <div class="in">
       <img class="logo" src="logo.png" width="440" height="188" alt="">
-      <h2>Close the lid.</h2>
-      <p class="sub">Free, open source, for every Mac.</p>
+      <h2>Close the Lid.<br><span class="accent">Your Agent Keeps Going.</span></h2>
       <div class="cta">
-        <a class="btn" href="https://github.com/aarav-puri/lidless/releases/latest">Download for Mac</a>
-        <a class="btn ghost" href="https://github.com/aarav-puri/lidless">View source</a>
+        <a class="btn" href="https://github.com/aarav-puri/lidless/releases/latest">↓ Download free</a>
+        <a class="btn ghost" href="https://github.com/aarav-puri/lidless">View source on GitHub →</a>
       </div>
+      <p class="cta-note">macOS 13 or later · Apple Silicon and Intel</p>
     </div>
   </section>
 
@@ -320,7 +349,7 @@
 
 <footer>
   <div class="wrap">
-    <p><time datetime="2026-11">Last updated November 2026</time> · Use at your own risk.</p>
+    <p><time datetime="2026-11">Last updated November 2026</time></p>
     <nav aria-label="Footer">
       <a href="https://github.com/aarav-puri/lidless">GitHub</a>
       <a href="https://github.com/aarav-puri/lidless/blob/main/LICENSE">License</a>
