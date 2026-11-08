@@ -13,10 +13,10 @@ Lidless keeps your Mac awake with the lid closed for exactly as long as your cod
 
 [**Download**](../../releases/latest) · [Website](https://lidless-gamma.vercel.app) · [How it knows](#how-it-knows) · [Install](#install) · [Report an issue](../../issues)
 
-![macOS 13+](https://img.shields.io/badge/macOS-13%2B-0b1a44?logo=apple&logoColor=white)
-![Universal](https://img.shields.io/badge/Apple%20Silicon%20%2B%20Intel-universal-1e3a8a)
-![Swift](https://img.shields.io/badge/Swift-no%20dependencies-1e3a8a?logo=swift&logoColor=white)
-![Private](https://img.shields.io/badge/network-none-1e3a8a)
+![macOS 13+](https://img.shields.io/badge/macOS-13%2B-1c1c1e?logo=apple&logoColor=white)
+![Universal](https://img.shields.io/badge/Apple%20Silicon%20%2B%20Intel-universal-0a84ff)
+![Swift](https://img.shields.io/badge/Swift-no%20dependencies-0a84ff?logo=swift&logoColor=white)
+![Private](https://img.shields.io/badge/network-none-0a84ff)
 
 </div>
 

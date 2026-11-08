@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <!-- Lidless mark: a closed laptop as two slabs of glass, with light leaking from the seam
+       because the agent inside is still working. Render with: node app/brand/render.js -->
+  <defs>
+    <path id="slab" d="M318 0 H706 Q740 0 760 26 L858 150 Q880 178 846 178 H178 Q144 178 166 150 L264 26 Q284 0 318 0 Z"/>
+    <linearGradient id="face" x1=".1" y1="0" x2=".55" y2="1">
+      <stop offset="0" stop-color="#ffffff" stop-opacity=".78"/>
+      <stop offset=".38" stop-color="#b8cfff" stop-opacity=".34"/>
+      <stop offset="1" stop-color="#1d4ed8" stop-opacity=".30"/>
+    </linearGradient>
+    <linearGradient id="faceBase" x1=".1" y1="0" x2=".55" y2="1">
+      <stop offset="0" stop-color="#9dbcff" stop-opacity=".45"/>
+      <stop offset="1" stop-color="#1e3a8a" stop-opacity=".35"/>
+    </linearGradient>
+    <linearGradient id="rim" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fff"/>
+      <stop offset=".45" stop-color="#fff" stop-opacity=".25"/>
+      <stop offset=".8" stop-color="#cfe0ff" stop-opacity=".55"/>
+      <stop offset="1" stop-color="#fff" stop-opacity=".95"/>
+    </linearGradient>
+    <linearGradient id="seam" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#2f7bff" stop-opacity="0"/>
+      <stop offset=".22" stop-color="#4c94ff"/>
+      <stop offset=".5" stop-color="#f2f7ff"/>
+      <stop offset=".78" stop-color="#4c94ff"/>
+      <stop offset="1" stop-color="#2f7bff" stop-opacity="0"/>
+    </linearGradient>
+    <radialGradient id="spec" cx=".3" cy=".1" r=".6">
+      <stop offset="0" stop-color="#fff" stop-opacity=".55"/>
+      <stop offset="1" stop-color="#fff" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="glow" x="-30%" y="-500%" width="160%" height="1100%"><feGaussianBlur stdDeviation="16"/></filter>
+    <filter id="ambient" x="-30%" y="-100%" width="160%" height="300%"><feGaussianBlur stdDeviation="46"/></filter>
+  </defs>
+
+  <ellipse cx="512" cy="600" rx="320" ry="60" fill="#2563eb" opacity=".5" filter="url(#ambient)"/>
+
+  <!-- base -->
+  <g transform="translate(0 470)">
+    <use href="#slab" fill="url(#faceBase)"/>
+    <use href="#slab" fill="none" stroke="url(#rim)" stroke-opacity=".7" stroke-width="3"/>
+  </g>
+
+  <!-- seam light -->
+  <rect x="190" y="634" width="644" height="16" rx="8" fill="url(#seam)" filter="url(#glow)"/>
+  <rect x="230" y="639" width="564" height="5" rx="2.5" fill="url(#seam)"/>
+
+  <!-- lid -->
+  <g transform="translate(0 430)">
+    <use href="#slab" fill="#060b1a" fill-opacity=".55"/>
+    <use href="#slab" fill="url(#face)"/>
+    <use href="#slab" fill="url(#spec)"/>
+    <use href="#slab" fill="none" stroke="url(#rim)" stroke-width="4"/>
+  </g>
+</svg>

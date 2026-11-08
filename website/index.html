@@ -2,13 +2,16 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Lidless - Keep Agents Running With the Lid Closed</title>
 <meta name="description" content="Free macOS menubar app that keeps your Mac awake with the lid closed for exactly as long as your coding agent is working. Claude Code, Codex, Gemini CLI and more. No timers.">
+<meta name="theme-color" content="#000000">
+<meta name="color-scheme" content="dark">
 <meta property="og:title" content="Lidless - Keep Agents Running With the Lid Closed">
 <meta property="og:description" content="Close the lid. The agent keeps going. When it finishes, the Mac sleeps.">
 <meta property="og:image" content="icon.png">
 <link rel="icon" href="icon.png">
+<link rel="apple-touch-icon" href="icon.png">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -21,271 +24,324 @@
 }
 </script>
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  /* Black page, glass on top. Few words, big type. */
   :root {
-    --bg: #04070f;
-    --panel: #0a1122;
-    --border: #1c2742;
-    --muted: #7d89a6;
-    --body: #dfe5f2;
-    --heading: #f3f6fc;
-    --accent: #7aa2ff;
-    --accent-dim: #4d6fc4;
-    --green: #4ade9b;
-    --font: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-    --mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
-    --max-w: 660px;
+    --black: #000; --ink: #f5f5f7; --ink-2: #86868b; --ink-3: #6e6e73;
+    --line: rgba(255,255,255,.12);
+    --glass: rgba(255,255,255,.045); --glass-hi: rgba(255,255,255,.07); --glass-line: rgba(255,255,255,.10);
+    --blue: #0A84FF; --blue-hi: #2997ff; --green: #30d158;
+    --sans: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", Inter, system-ui, sans-serif;
+    --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    --ease: cubic-bezier(.22, 1, .36, 1);
+    color-scheme: dark;
   }
-  html {
-    background: radial-gradient(ellipse 80% 70% at 50% 0%, #10204a 0%, var(--bg) 70%) fixed, var(--bg);
-    color: var(--body); font-family: var(--font); font-size: 16px; line-height: 1.6;
-    -webkit-font-smoothing: antialiased;
-  }
-  body { min-height: 100vh; background: transparent; }
-  .wrap { max-width: var(--max-w); margin: 0 auto; padding: 0 20px; }
-  a { color: var(--heading); text-underline-offset: 3px; text-decoration-color: rgba(255,255,255,.3); }
-  a:hover { text-decoration-color: var(--accent); }
-
-  /* Hero */
-  .hero { padding: 84px 0 72px; text-align: center; }
-  .hero > :not(h1) { animation: fadein .7s ease both; }
-  .hero .hero-sub { animation-delay: .45s; }
-  .hero .cta-row, .hero .cta-note { animation-delay: .6s; }
-  .hero .term { animation-delay: .8s; }
-  .brand-mark img { width: 104px; height: 104px; display: block; margin: 0 auto 36px; filter: drop-shadow(0 18px 40px rgba(40, 80, 200, .35)); }
-  .hero h1 { font-size: clamp(2.2rem, 6vw, 3.2rem); font-weight: 800; line-height: 1.08; letter-spacing: -.02em; color: var(--heading); margin-bottom: 24px; }
-  .hero h1 em { font-style: normal; color: var(--accent); }
-  /* Text Reveal: each word rises out of its own clip while it sharpens from a blur */
-  .reveal .line { display: block; }
-  .reveal .clip { display: inline-block; overflow: hidden; padding: 0 .04em .12em; margin: 0 -.04em -.12em; vertical-align: top; }
-  .reveal .word { display: inline-block; animation: rise .9s cubic-bezier(.2, .7, .2, 1) both; animation-delay: var(--d, 0s); }
-  @keyframes rise { from { opacity: 0; transform: translateY(70%); filter: blur(10px); } to { opacity: 1; transform: none; filter: blur(0); } }
+  *, *::before, *::after { box-sizing: border-box; }
+  html { background: var(--black); scroll-behavior: smooth; scroll-padding-top: 64px; }
+  body { margin: 0; background: var(--black); color: var(--ink); font-family: var(--sans); font-size: 17px; line-height: 1.47; letter-spacing: -.022em; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+  h1, h2, h3, p { margin: 0; }
+  h1, h2 { font-weight: 600; text-wrap: balance; }
+  img { max-width: 100%; height: auto; display: block; }
+  a { color: inherit; }
+  :focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; border-radius: 8px; }
+  .wrap { width: 100%; max-width: 1080px; margin: 0 auto; padding-left: max(20px, env(safe-area-inset-left, 0px)); padding-right: max(20px, env(safe-area-inset-right, 0px)); }
+  .center { text-align: center; }
   .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
-  /* Terminal: port of Magic UI's Terminal (typed commands, sequenced output) */
-  .term { margin: 56px auto 0; max-width: 520px; text-align: left; background: var(--panel); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; box-shadow: 0 24px 60px -24px rgba(0, 0, 0, .7); }
-  .term-bar { display: flex; align-items: center; gap: 7px; padding: 12px 14px; border-bottom: 1px solid var(--border); }
-  .term-bar i { width: 9px; height: 9px; border-radius: 50%; background: #ff5f57; }
+  /* Glass: a faint fill, a hairline, and whatever is behind it blurred through */
+  .glass { background: var(--glass); border: 1px solid var(--glass-line); -webkit-backdrop-filter: blur(24px) saturate(1.6); backdrop-filter: blur(24px) saturate(1.6); box-shadow: inset 0 1px 0 rgba(255,255,255,.08); }
+
+  /* Nav */
+  .nav { position: fixed; z-index: 50; inset: 0 0 auto; padding-top: env(safe-area-inset-top, 0px); background: rgba(0,0,0,.6); -webkit-backdrop-filter: blur(20px) saturate(1.8); backdrop-filter: blur(20px) saturate(1.8); border-bottom: 1px solid rgba(255,255,255,.08); }
+  .nav .wrap { display: flex; align-items: center; gap: 6px; height: 52px; }
+  .brand { display: flex; align-items: center; gap: 8px; margin-right: auto; text-decoration: none; font-weight: 600; font-size: 17px; }
+  .brand img { width: 24px; height: 24px; border-radius: 6px; }
+  .nav a.l { font-size: 13px; color: #d2d2d7; text-decoration: none; padding: 6px 10px; border-radius: 999px; transition: color .2s; }
+  .nav a.l:hover { color: #fff; }
+
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-weight: 500; font-size: 17px; letter-spacing: -.01em; color: #fff; text-decoration: none; background: var(--blue); padding: 12px 24px; border-radius: 999px; border: 0; white-space: nowrap; transition: background .2s, transform .2s var(--ease); }
+  .btn:hover { background: #0077ed; }
+  .btn:active { transform: scale(.97); }
+  .btn.sm { font-size: 13px; padding: 6px 14px; margin-left: 8px; }
+  .btn.ghost { background: var(--glass-hi); border: 1px solid var(--glass-line); }
+  .btn.ghost:hover { background: rgba(255,255,255,.12); }
+
+  /* Hero */
+  .hero { padding-top: calc(env(safe-area-inset-top, 0px) + 128px); text-align: center; }
+  .hero .logo { width: min(220px, 52vw); margin: 0 auto 8px; animation: float 7s ease-in-out infinite; }
+  .hero h1 { font-size: clamp(48px, 8.4vw, 96px); line-height: 1.04; letter-spacing: -.035em; }
+  .sub { font-size: clamp(19px, 2.2vw, 28px); line-height: 1.2; font-weight: 600; color: var(--ink-2); letter-spacing: -.01em; margin-top: 16px; text-wrap: balance; }
+  .cta { display: flex; justify-content: center; align-items: center; gap: 22px; flex-wrap: wrap; margin-top: 36px; }
+  .cta small { font-size: 15px; color: var(--ink-2); }
+  .badges { display: flex; justify-content: center; gap: 6px; margin-top: 18px; opacity: .8; }
+  .badges a { line-height: 0; }
+  @keyframes float { 50% { transform: translateY(-8px); } }
+
+  /* Text reveal: each word rises out of its own clip while it sharpens */
+  .reveal .line { display: block; }
+  .reveal .clip { display: inline-block; overflow: hidden; padding: 0 .04em .14em; margin: 0 -.04em -.14em; vertical-align: top; }
+  .reveal .word { display: inline-block; animation: rise .9s var(--ease) both; animation-delay: var(--d, 0s); }
+  @keyframes rise { from { opacity: 0; transform: translateY(70%); filter: blur(10px); } to { opacity: 1; transform: none; filter: blur(0); } }
+  .fade { animation: fadein .8s var(--ease) both; animation-delay: var(--d, .5s); }
+  @keyframes fadein { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+
+  /* Stage: a glass terminal floating over a blurred blue wallpaper */
+  .stage { position: relative; margin: clamp(64px, 8vw, 96px) auto 0; max-width: 1080px; border-radius: 32px; overflow: hidden; padding: clamp(28px, 7vw, 88px) clamp(14px, 6vw, 80px); background: #02040c; isolation: isolate; }
+  .stage::before { content: ""; position: absolute; inset: -20%; z-index: -1; filter: blur(60px);
+    background:
+      radial-gradient(40% 50% at 18% 30%, #1f4fff 0%, transparent 70%),
+      radial-gradient(35% 45% at 85% 20%, #6a3cff 0%, transparent 70%),
+      radial-gradient(50% 50% at 60% 100%, #0a84ff 0%, transparent 70%),
+      radial-gradient(30% 30% at 40% 60%, #00c2ff55 0%, transparent 70%);
+    opacity: .75; animation: drift 18s ease-in-out infinite alternate; }
+  @keyframes drift { to { transform: translate(4%, -3%) rotate(6deg) scale(1.05); } }
+  .term { max-width: 640px; margin: 0 auto; text-align: left; border-radius: 16px; overflow: hidden; background: rgba(10,12,20,.42); box-shadow: 0 40px 80px -30px rgba(0,0,0,.8), inset 0 1px 0 rgba(255,255,255,.1); }
+  .term-bar { display: flex; align-items: center; gap: 8px; padding: 13px 16px; border-bottom: 1px solid var(--glass-line); }
+  .term-bar i { width: 11px; height: 11px; border-radius: 50%; background: #ff5f57; }
   .term-bar i:nth-child(2) { background: #febc2e; }
   .term-bar i:nth-child(3) { background: #28c840; }
-  .term-bar span { margin-left: auto; font: 11px var(--mono); color: var(--muted); }
-  .term pre { margin: 0; border: 0; border-radius: 0; background: none; padding: 16px 18px 18px; font-size: 12.5px; line-height: 1.75; }
-  .term .ln { display: block; min-height: 1.75em; white-space: pre; }
-  .term .cmd::before { content: "$ "; color: var(--accent); }
+  .term-bar span { margin-left: auto; font: 12px var(--mono); color: rgba(255,255,255,.5); }
+  .term pre { margin: 0; padding: 18px 20px 22px; font: 13.5px/1.8 var(--mono); letter-spacing: 0; color: #e6e9f2; overflow-x: auto; }
+  .term .ln { display: block; min-height: 1.8em; white-space: pre; }
+  .term .cmd::before { content: "$ "; color: var(--blue-hi); }
   .term .ok { color: var(--green); }
-  .term .dim { color: var(--muted); }
+  .term .dim { color: rgba(255,255,255,.45); }
   .term.armed .out { opacity: 0; transform: translateY(-4px); }
   .term .out { transition: opacity .3s ease, transform .3s ease; }
-  .term .caret { display: inline-block; width: 7px; height: 1.1em; vertical-align: -2px; background: var(--accent); margin-left: 2px; animation: blink 1s steps(1) infinite; }
+  .term .caret { display: inline-block; width: 8px; height: 1.1em; vertical-align: -2px; background: var(--blue-hi); margin-left: 2px; animation: blink 1s steps(1) infinite; }
   @keyframes blink { 50% { opacity: 0; } }
-  .hero-sub { font-size: 17px; line-height: 1.65; max-width: 520px; margin: 0 auto 38px; }
-  .cta-row { display: flex; gap: 16px; justify-content: center; align-items: flex-start; flex-wrap: wrap; }
-  .cta-dl { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; }
-  .badges { display: flex; gap: 6px; }
-  .badges a { line-height: 0; }
-  .cta-note { margin-top: 16px; font-family: var(--mono); font-size: 12px; color: var(--muted); }
-  .btn { display: inline-flex; align-items: center; gap: 8px; padding: 11px 22px; border-radius: 10px; font-size: 14px; font-weight: 600; text-decoration: none; transition: opacity .2s, border-color .2s, transform .2s; }
-  .btn-primary { background: var(--heading); color: #050913; border: 1px solid var(--heading); }
-  .btn-primary:hover { opacity: .9; transform: translateY(-1px); }
-  .btn-secondary { color: var(--body); border: 1px solid rgba(255,255,255,.16); }
-  .btn-secondary:hover { border-color: rgba(255,255,255,.4); }
 
-  main { counter-reset: sec; }
-  section { padding: 64px 0; }
-  section + section { border-top: 1px solid var(--border); }
-  h2 { counter-increment: sec; display: flex; align-items: center; gap: 12px; font-family: var(--mono); font-size: 11px; font-weight: 400; letter-spacing: .18em; text-transform: uppercase; color: var(--muted); margin-bottom: 32px; }
-  h2::before { content: counter(sec, decimal-leading-zero); color: var(--accent); letter-spacing: .06em; }
-  h2::after { content: ""; flex: 1; height: 1px; background: linear-gradient(90deg, var(--border), transparent); }
-  h3 { font-size: 15px; font-weight: 700; color: var(--heading); letter-spacing: -.01em; margin: 30px 0 8px; }
-  h3:first-of-type { margin-top: 0; }
-  p { font-size: 15px; line-height: 1.7; }
-  p + p { margin-top: 14px; }
-  .lead { font-size: 17px; font-weight: 600; color: var(--heading); line-height: 1.55; margin-bottom: 18px; }
-  code { font-family: var(--mono); font-size: 12.5px; background: var(--panel); border: 1px solid var(--border); border-radius: 5px; padding: 2px 6px; color: var(--accent); overflow-wrap: anywhere; }
-  pre { font-family: var(--mono); font-size: 13px; background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; margin-top: 16px; overflow-x: auto; color: var(--body); line-height: 1.7; }
-  pre .c { color: var(--muted); }
-  pre .p { color: var(--accent); user-select: none; }
+  /* Chapters */
+  section.ch { padding-top: clamp(120px, 16vw, 200px); }
+  .ch h2 { font-size: clamp(40px, 6vw, 72px); line-height: 1.05; letter-spacing: -.03em; }
+  .ch h2 .blue { color: var(--blue-hi); }
+  .ch .sub { max-width: 30ch; margin-left: auto; margin-right: auto; }
+  .ch .body { color: var(--ink-2); font-size: 19px; max-width: 58ch; margin: 22px auto 0; }
+  .ch .body strong, .ch .body code { color: var(--ink); }
+  .head { text-align: center; margin-bottom: clamp(44px, 6vw, 64px); }
+  code { font-family: var(--mono); font-size: .86em; letter-spacing: 0; background: rgba(255,255,255,.07); border: 1px solid var(--glass-line); border-radius: 6px; padding: 1px 6px; overflow-wrap: anywhere; }
 
-  /* Agents */
-  .agents { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
-  .agents span { font: 12px var(--mono); padding: 5px 11px; border: 1px solid var(--border); border-radius: 999px; color: var(--body); background: rgba(255,255,255,.02); }
+  .tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(12px, 1.6vw, 20px); }
+  .tiles > div { position: relative; min-width: 0; border-radius: 28px; padding: clamp(26px, 3vw, 36px); min-height: clamp(200px, 22vw, 260px); display: flex; flex-direction: column; justify-content: flex-end; overflow: hidden; transition: transform .5s var(--ease), background .3s; }
+  .tiles > div:hover { transform: translateY(-4px); background: var(--glass-hi); }
+  .tiles .k { position: absolute; top: clamp(24px, 3vw, 34px); left: clamp(26px, 3vw, 36px); font-size: 13px; color: var(--ink-3); font-weight: 500; }
+  .tiles b { display: block; font-size: clamp(26px, 2.8vw, 36px); line-height: 1.08; font-weight: 600; letter-spacing: -.02em; }
+  .tiles span { display: block; margin-top: 10px; color: var(--ink-2); font-size: 16px; }
+  .tiles .blue b { color: var(--blue-hi); }
+
+  /* Soft colored light behind glass blocks so the blur has something to bend */
+  .lit { position: relative; isolation: isolate; }
+  .lit::before { content: ""; position: absolute; z-index: -1; left: 10%; right: 10%; top: 20%; bottom: 0; background: radial-gradient(50% 60% at 30% 50%, rgba(10,132,255,.22), transparent 70%), radial-gradient(40% 60% at 75% 50%, rgba(94,92,230,.18), transparent 70%); filter: blur(40px); }
+
+  .chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 28px; }
+  .chips span { font-size: 14px; padding: 7px 14px; border-radius: 999px; color: #d2d2d7; }
 
   /* Comparison */
-  .table-scroll { overflow-x: auto; margin: 0 -20px; padding: 0 20px; }
-  .comparison { width: 100%; min-width: 560px; border-collapse: collapse; font-size: 14px; }
-  .comparison th { text-align: center; font: 500 11px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); padding: 0 10px 14px; border-bottom: 1px solid var(--border); }
-  .comparison th:first-child { text-align: left; padding-left: 0; }
-  .comparison td { padding: 14px 10px; border-bottom: 1px solid var(--border); text-align: center; }
-  .comparison td:first-child { text-align: left; padding-left: 0; }
-  .comparison tr:last-child td { border-bottom: none; }
-  .comparison th:nth-child(2), .comparison td:nth-child(2) { color: var(--heading); }
-  .check { color: var(--green); }
-  .cross { color: #4a5470; }
-  .warn { color: #d7a24a; font: 11px var(--mono); }
-  .note { margin-top: 18px; font-size: 13px; color: var(--muted); }
+  .table { border-radius: 28px; padding: clamp(8px, 2vw, 16px) clamp(16px, 3vw, 32px); overflow-x: auto; }
+  table { width: 100%; min-width: 560px; border-collapse: collapse; font-size: 16px; }
+  th { font-size: 13px; font-weight: 500; color: var(--ink-2); padding: 18px 10px; text-align: center; }
+  th:nth-child(2) { color: var(--ink); }
+  td { padding: 16px 10px; border-top: 1px solid var(--line); text-align: center; color: var(--ink-2); }
+  td:first-child, th:first-child { text-align: left; padding-left: 0; color: var(--ink); }
+  td:nth-child(2) { color: var(--ink); }
+  td.y { color: var(--blue-hi); font-weight: 600; }
+  .n { color: #48484a; }
+  .w { font-size: 13px; color: #ff9f0a; }
+  .note { margin-top: 20px; font-size: 15px; color: var(--ink-3); text-align: center; }
 
-  .steps { list-style: none; counter-reset: step; }
-  .steps li { counter-increment: step; display: flex; gap: 16px; padding-bottom: 20px; }
-  .steps li::before { content: counter(step); flex: none; width: 24px; height: 24px; border-radius: 50%; border: 1px solid var(--border); font: 11px var(--mono); display: grid; place-items: center; color: var(--muted); margin-top: 2px; }
-  .callout { background: var(--panel); border: 1px solid var(--border); border-left: 3px solid var(--accent-dim); border-radius: 8px; padding: 18px 20px; margin-top: 8px; font-size: 13px; color: var(--muted); line-height: 1.65; }
-  .callout strong { color: var(--body); }
-  strong { color: var(--heading); font-weight: 600; }
+  /* Callouts */
+  .notes { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(12px, 1.6vw, 20px); margin-top: clamp(12px, 1.6vw, 20px); }
+  .notes > div { border-radius: 28px; padding: clamp(24px, 3vw, 32px); font-size: 15px; color: var(--ink-2); line-height: 1.6; }
+  .notes strong { display: block; color: var(--ink); font-size: 17px; font-weight: 600; margin-bottom: 8px; }
 
-  footer { border-top: 1px solid var(--border); padding: 40px 0 48px; }
-  footer .wrap { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; }
-  .footer-note { font: 12px var(--mono); color: var(--muted); }
-  .footer-links { display: flex; gap: 20px; flex-wrap: wrap; }
-  .footer-links a { font-size: 13px; color: var(--muted); text-decoration: none; }
-  .footer-links a:hover { color: var(--heading); }
+  /* FAQ */
+  .faq { max-width: 860px; margin: 0 auto; }
+  .faq details { border-top: 1px solid var(--line); }
+  .faq details:last-child { border-bottom: 1px solid var(--line); }
+  .faq summary { list-style: none; cursor: pointer; padding: 22px 40px 22px 0; font-size: clamp(19px, 2vw, 24px); font-weight: 600; position: relative; }
+  .faq summary::-webkit-details-marker { display: none; }
+  .faq summary::after { content: "+"; position: absolute; right: 4px; top: 50%; transform: translateY(-50%); font-size: 28px; font-weight: 300; color: var(--ink-2); transition: transform .3s var(--ease); }
+  .faq details[open] summary::after { transform: translateY(-50%) rotate(45deg); }
+  .faq p { color: var(--ink-2); font-size: 17px; padding: 0 40px 24px 0; max-width: 62ch; }
 
-  @keyframes fadein { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
-  @media (max-width: 560px) {
-    .hero { padding-top: 56px; }
+  /* Closing */
+  .closing { text-align: center; padding-bottom: clamp(100px, 12vw, 160px); }
+  .closing .logo { width: min(180px, 46vw); margin: 0 auto 12px; }
+
+  footer { border-top: 1px solid rgba(255,255,255,.1); padding-block: 22px 40px; font-size: 12px; color: var(--ink-3); }
+  footer .wrap { display: flex; flex-wrap: wrap; gap: 10px 28px; justify-content: space-between; }
+  footer nav { display: flex; gap: 20px; }
+  footer a { text-decoration: none; }
+  footer a:hover { color: var(--ink); }
+
+  /* Scroll-in */
+  .in { opacity: 0; transform: translateY(28px); transition: opacity 1s var(--ease), transform 1s var(--ease); }
+  .in.on { opacity: 1; transform: none; }
+
+  @media (max-width: 820px) {
+    .tiles, .notes { grid-template-columns: 1fr; }
+    .tiles > div { min-height: 170px; }
+    .nav a.l { display: none; }
   }
-  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+    .in { opacity: 1; transform: none; }
+  }
 </style>
 </head>
 <body>
 
-<div class="wrap">
+<nav class="nav" aria-label="Main"><div class="wrap">
+  <a class="brand" href="#top"><img src="icon.png" alt="">Lidless</a>
+  <a class="l" href="#how">How it works</a>
+  <a class="l" href="#compare">Compare</a>
+  <a class="l" href="#install">Install</a>
+  <a class="l" href="#faq">FAQ</a>
+  <a class="btn sm" href="https://github.com/aarav-puri/lidless/releases/latest">Download</a>
+</div></nav>
 
-  <header class="hero">
-    <div class="brand-mark"><img src="icon.png" alt="Lidless app icon"></div>
+<main id="top">
+
+  <header class="hero wrap">
+    <img class="logo fade" style="--d:0s" src="logo.png" width="440" height="188" alt="Lidless logo: a closed laptop made of glass, light leaking from the seam">
     <h1 class="reveal">
-      <span class="sr-only">Close the Lid. The Agent Keeps Going.</span>
-      <span class="line" aria-hidden="true"><span class="clip"><span class="word" style="--d:.05s">Close</span></span> <span class="clip"><span class="word" style="--d:.13s">the</span></span> <span class="clip"><span class="word" style="--d:.21s">Lid.</span></span></span>
-      <em class="line" aria-hidden="true"><span class="clip"><span class="word" style="--d:.33s">The</span></span> <span class="clip"><span class="word" style="--d:.41s">Agent</span></span> <span class="clip"><span class="word" style="--d:.49s">Keeps</span></span> <span class="clip"><span class="word" style="--d:.57s">Going.</span></span></em>
+      <span class="sr-only">Close the lid. The agent keeps going.</span>
+      <span class="line" aria-hidden="true"><span class="clip"><span class="word" style="--d:.05s">Close</span></span> <span class="clip"><span class="word" style="--d:.13s">the</span></span> <span class="clip"><span class="word" style="--d:.21s">lid.</span></span></span>
+      <span class="line" aria-hidden="true"><span class="clip"><span class="word" style="--d:.33s">It</span></span> <span class="clip"><span class="word" style="--d:.41s">keeps</span></span> <span class="clip"><span class="word" style="--d:.49s">going.</span></span></span>
     </h1>
-    <p class="hero-sub">
-      Lidless keeps your Mac awake with the lid closed while your coding agent is working. When it finishes, the Mac sleeps.
-    </p>
-    <div class="cta-row">
-      <div class="cta-dl">
-        <a class="btn btn-primary" href="https://github.com/aarav-puri/lidless/releases/latest">↓ Download free</a>
-        <div class="badges">
-          <a href="https://github.com/aarav-puri/lidless/releases/latest"><img src="https://img.shields.io/github/downloads/aarav-puri/lidless/total?color=666666&amp;labelColor=444444" alt="Downloads"></a>
-          <a href="https://github.com/aarav-puri/lidless"><img src="https://img.shields.io/github/stars/aarav-puri/lidless?style=social" alt="GitHub stars"></a>
-        </div>
-      </div>
-      <a class="btn btn-secondary" href="https://github.com/aarav-puri/lidless">View source on GitHub →</a>
+    <p class="sub fade" style="--d:.6s">Your Mac stays awake while your coding agent works. When it finishes, the Mac sleeps.</p>
+    <div class="cta fade" style="--d:.75s">
+      <a class="btn" href="https://github.com/aarav-puri/lidless/releases/latest">Download for Mac</a>
+      <small>Free · macOS 13 or later</small>
     </div>
-    <p class="cta-note">macOS 13 or later · Apple Silicon and Intel</p>
-    <div class="term" id="term" role="img" aria-label="Terminal: lidless run wraps a test suite, lidless status shows lid sleep disabled while Claude Code and npm hold it">
-      <div class="term-bar"><i></i><i></i><i></i><span>zsh</span></div>
+    <div class="badges fade" style="--d:.9s">
+      <a href="https://github.com/aarav-puri/lidless/releases/latest"><img src="https://img.shields.io/github/downloads/aarav-puri/lidless/total?color=1c1c1e&amp;labelColor=2c2c2e" alt="Downloads"></a>
+      <a href="https://github.com/aarav-puri/lidless"><img src="https://img.shields.io/github/stars/aarav-puri/lidless?style=social" alt="GitHub stars"></a>
+    </div>
+
+    <div class="stage fade" style="--d:1s">
+      <div class="term glass" id="term" role="img" aria-label="Terminal: lidless run wraps a test suite, lidless status shows lid sleep disabled while Claude Code and npm hold it">
+        <div class="term-bar"><i></i><i></i><i></i><span>zsh</span></div>
 <pre aria-hidden="true"><span class="ln cmd" data-type>lidless run -- npm run e2e &amp;</span><span class="ln cmd" data-type>lidless status</span><span class="ln out">Lidless app: running</span><span class="ln out">Lid sleep: <span class="ok">disabled (awake)</span></span><span class="ln out">  Claude Code  <span class="dim">pid 48211  since 2:14 PM</span></span><span class="ln out">  npm  <span class="dim">pid 48390  since 2:15 PM</span></span></pre>
+      </div>
     </div>
   </header>
 
-<main>
-
-  <section>
-    <h2>What it does</h2>
-    <p>
-      Keep-awake apps make you pick a duration. Lidless watches the agent instead. While an agent is working it holds <code>pmset disablesleep</code>, the setting that covers lid-close sleep. When the work stops, it lets go.
-    </p>
-  </section>
-
-  <section>
-    <h2>How it knows</h2>
-    <h3>Claude Code and Codex: exact</h3>
-    <p>Lidless adds hooks to <code>~/.claude/settings.json</code> and <code>~/.codex/hooks.json</code> in the background. <code>UserPromptSubmit</code> starts a hold; <code>Stop</code>, <code>SessionEnd</code> and, for Codex, <code>Interrupt</code> end it. Works across every session and terminal. Codex asks to review new hooks once the next time it opens. Until then, Codex is tracked by activity.</p>
-    <h3>Other agents: by activity</h3>
-    <p>Everything else is detected by process. An agent counts as working while it or anything it spawned is using CPU. Lidless waits two quiet minutes before letting go, so a slow model response is not mistaken for done.</p>
-    <div class="agents">
-      <span>Claude Code</span><span>Codex</span><span>Gemini CLI</span><span>Aider</span><span>OpenCode</span><span>Cursor Agent</span><span>Goose</span><span>Amp</span><span>Qwen Code</span><span>Crush</span><span>Droid</span><span>Copilot CLI</span>
+  <section class="ch wrap" id="how">
+    <div class="head in">
+      <h2>No timer.<br><span class="blue">It watches the agent.</span></h2>
+      <p class="body">Keep-awake apps make you pick a duration. Lidless holds <code>pmset disablesleep</code>, the setting that covers lid-close sleep, while an agent is working, and lets go when it stops.</p>
     </div>
-    <h3>Anything else: wrap it</h3>
-    <p>Put <code>lidless run</code> in front of any command and the Mac stays awake until it exits. <code>lidless status</code> shows what is holding it.</p>
+    <div class="tiles lit in">
+      <div class="glass blue"><span class="k">Hooks</span><b>Claude Code and Codex. Exact.</b><span>Every turn's start and finish, across every session and terminal.</span></div>
+      <div class="glass"><span class="k">Activity</span><b>Everything else. Close.</b><span>Working while it or anything it spawned uses CPU. Two quiet minutes to let go.</span></div>
+      <div class="glass"><span class="k">Wrap</span><b><code>lidless run</code></b><span>Put it in front of any command. Awake until it exits.</span></div>
+    </div>
+    <div class="chips in">
+      <span class="glass">Claude Code</span><span class="glass">Codex</span><span class="glass">Gemini CLI</span><span class="glass">Aider</span><span class="glass">OpenCode</span><span class="glass">Cursor Agent</span><span class="glass">Goose</span><span class="glass">Amp</span><span class="glass">Qwen Code</span><span class="glass">Crush</span><span class="glass">Droid</span><span class="glass">Copilot CLI</span>
+    </div>
   </section>
 
-  <section>
-    <h2>Alternatives</h2>
-    <div class="table-scroll">
-      <table class="comparison" aria-label="Feature comparison">
-        <thead>
-          <tr><th></th><th>Lidless</th><th>Amphetamine</th><th>caffeinate</th><th>Cloud agents</th></tr>
-        </thead>
+  <section class="ch wrap">
+    <div class="head in">
+      <h2>When it's done,<br>it sleeps.</h2>
+      <p class="sub">Lid shut, agent finished: the Mac goes to sleep within seconds.</p>
+    </div>
+    <div class="tiles lit in">
+      <div class="glass"><b>20%</b><span>Lets go on battery power at 20%. Plug in for long runs.</span></div>
+      <div class="glass"><b>Too hot</b><span>Lets go when macOS reports a critical thermal state.</span></div>
+      <div class="glass blue"><b>No network</b><span>No telemetry, no account. Nothing leaves your Mac.</span></div>
+    </div>
+    <p class="note in">Keep the Mac on a hard surface while an agent runs, and never put it in a bag mid-run.</p>
+  </section>
+
+  <section class="ch wrap" id="compare">
+    <div class="head in">
+      <h2>One thing, done right.</h2>
+      <p class="sub">Amphetamine does far more. Lidless just keeps a closed Mac awake while an agent works.</p>
+    </div>
+    <div class="table glass in">
+      <table aria-label="Feature comparison">
+        <thead><tr><th></th><th>Lidless</th><th>Amphetamine</th><th>caffeinate</th><th>Cloud agents</th></tr></thead>
         <tbody>
-          <tr><td>Awake with lid closed</td><td class="check">✓</td><td><span class="warn">buried</span></td><td class="cross">✗</td><td class="check">✓</td></tr>
-          <tr><td>Ends when the agent ends</td><td class="check">✓</td><td class="cross">✗</td><td><span class="warn">-w pid</span></td><td class="check">✓</td></tr>
-          <tr><td>Sleeps once done, lid shut</td><td class="check">✓</td><td class="cross">✗</td><td class="cross">✗</td><td>-</td></tr>
-          <tr><td>No timer to pick</td><td class="check">✓</td><td class="cross">✗</td><td class="cross">✗</td><td class="check">✓</td></tr>
-          <tr><td>Your machine, your setup</td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td><td class="cross">✗</td></tr>
-          <tr><td>Free</td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td><td><span class="warn">metered</span></td></tr>
+          <tr><td>Awake with lid closed</td><td class="y">✓</td><td><span class="w">buried</span></td><td class="n">✗</td><td class="y">✓</td></tr>
+          <tr><td>Ends when the agent ends</td><td class="y">✓</td><td class="n">✗</td><td><span class="w">-w pid</span></td><td class="y">✓</td></tr>
+          <tr><td>Sleeps once done, lid shut</td><td class="y">✓</td><td class="n">✗</td><td class="n">✗</td><td>-</td></tr>
+          <tr><td>No timer to pick</td><td class="y">✓</td><td class="n">✗</td><td class="n">✗</td><td class="y">✓</td></tr>
+          <tr><td>Your machine, your setup</td><td class="y">✓</td><td class="y">✓</td><td class="y">✓</td><td class="n">✗</td></tr>
+          <tr><td>Free</td><td class="y">✓</td><td class="y">✓</td><td class="y">✓</td><td><span class="w">metered</span></td></tr>
         </tbody>
       </table>
     </div>
-    <p class="note">Amphetamine does far more. Lidless does one thing: keeps a closed Mac awake while an agent works, then lets it sleep.</p>
   </section>
 
-  <section>
-    <h2>Install</h2>
-    <ol class="steps">
-      <li><p>Download <code>Lidless.zip</code> from <a href="https://github.com/aarav-puri/lidless/releases/latest">GitHub Releases</a> and drag Lidless to Applications.</p></li>
-      <li><p>Open it and click <strong>Set Up</strong>. macOS asks for your password once.</p></li>
-      <li><p>Start an agent. Close the lid.</p></li>
-    </ol>
-    <div class="callout">
-      <strong>What Set Up changes, exactly.</strong> It adds <code>/etc/sudoers.d/lidless</code>, which lets your user run two commands without a password: <code>pmset -a disablesleep 1</code> and <code>pmset -a disablesleep 0</code>. Nothing else. It also links the <code>lidless</code> command into <code>/usr/local/bin</code>. Hooks for Claude Code and Codex are added in the background when either is installed, with a backup of each config file kept first. <strong>Uninstall</strong> in the menu removes all of it.
+  <section class="ch wrap" id="install">
+    <div class="head in">
+      <h2>Set up once.</h2>
+      <p class="sub">Three steps. One password prompt.</p>
     </div>
-    <div class="callout">
-      <strong>Not on the App Store</strong> because App Store sandboxing blocks the system call lid-close sleep needs. Same reason tools like Lunar and BetterTouchTool ship outside it.
+    <div class="tiles lit in">
+      <div class="glass"><span class="k">1</span><b>Download</b><span><code>Lidless.zip</code> from <a href="https://github.com/aarav-puri/lidless/releases/latest">GitHub Releases</a>. Drag it to Applications.</span></div>
+      <div class="glass"><span class="k">2</span><b>Set Up</b><span>Open it and click Set Up. macOS asks for your password once.</span></div>
+      <div class="glass blue"><span class="k">3</span><b>Close the lid</b><span>Start an agent. Walk away.</span></div>
+    </div>
+    <div class="notes in">
+      <div class="glass"><strong>What Set Up changes</strong>It adds <code>/etc/sudoers.d/lidless</code>, letting your user run <code>pmset -a disablesleep 1</code> and <code>0</code> without a password. Nothing else. It links <code>lidless</code> into <code>/usr/local/bin</code> and adds hooks for Claude Code and Codex, backing up each config first. Uninstall in the menu removes all of it.</div>
+      <div class="glass"><strong>Not on the App Store</strong>App Store sandboxing blocks the system call lid-close sleep needs. Same reason tools like Lunar and BetterTouchTool ship outside it.</div>
     </div>
   </section>
 
-  <section>
-    <h2>Safety</h2>
-    <p>
-      Use at your own risk. Two rules: <strong>keep the Mac on a hard surface</strong> while an agent runs, and <strong>never put it in a bag</strong> mid-run. It will overheat.
-    </p>
-    <p>
-      Lidless lets go on its own when the battery drops to 20% on battery power, when macOS reports a critical thermal state, or when the app quits. Plug in for long runs.
-    </p>
+  <section class="ch wrap" id="faq">
+    <div class="head in"><h2>Questions</h2></div>
+    <div class="faq in">
+      <details><summary>Can a timer be set?</summary><p>No. The agent decides. For anything else, use <code>lidless run</code>.</p></details>
+      <details><summary>Does it work without an external monitor?</summary><p>Yes. <code>pmset disablesleep</code> covers lid-close sleep directly.</p></details>
+      <details><summary>What happens when the agent finishes with the lid closed?</summary><p>Lidless restores normal sleep and puts the Mac to sleep within a few seconds, unless an external display is attached.</p></details>
+      <details><summary>What if Claude Code is waiting on a permission prompt?</summary><p>A permission prompt is not a finished turn, so the Mac stays awake waiting for an answer. For unattended runs, use auto mode or allow rules so nothing blocks. If a session goes fully quiet for 15 minutes without finishing, Lidless lets it go anyway.</p></details>
+      <details><summary>Codex asked me to review hooks. Is that expected?</summary><p>Yes. Codex asks once, the next time it opens after Lidless adds its hooks. Until you approve, Codex is tracked by activity.</p></details>
+      <details><summary>Does it drain battery faster?</summary><p>Only while an agent is working, about the same as using it with the lid open.</p></details>
+      <details><summary>Does Lidless send any data anywhere?</summary><p>No. No network access, no telemetry, no account.</p></details>
+      <details><summary>Which Macs and macOS versions?</summary><p>macOS 13 Ventura and later, including Tahoe. Universal binary for Apple Silicon and Intel.</p></details>
+    </div>
   </section>
 
-  <section>
-    <h2>FAQ</h2>
-
-    <h3>Can a timer be set?</h3>
-    <p>No. The agent decides. For anything else, use <code>lidless run</code>.</p>
-
-    <h3>Does it work without an external monitor?</h3>
-    <p>Yes. <code>pmset disablesleep</code> covers lid-close sleep directly.</p>
-
-    <h3>What happens when the agent finishes with the lid closed?</h3>
-    <p>Lidless restores normal sleep and puts the Mac to sleep within a few seconds, unless an external display is attached.</p>
-
-    <h3>What if Claude Code is waiting on a permission prompt?</h3>
-    <p>A permission prompt is not a finished turn, so the Mac stays awake waiting for an answer. For unattended runs, use auto mode or allow rules so nothing blocks. If a session goes fully quiet for 15 minutes without finishing, Lidless lets it go anyway.</p>
-
-    <h3>Does it drain battery faster?</h3>
-    <p>Only while an agent is working, about the same as using it with the lid open.</p>
-
-    <h3>Does Lidless send any data anywhere?</h3>
-    <p>No. No network access, no telemetry, no account.</p>
-
-    <h3>Which Macs and macOS versions?</h3>
-    <p>macOS 13 Ventura and later, including Tahoe. Universal binary for Apple Silicon and Intel.</p>
+  <section class="ch wrap closing">
+    <div class="in">
+      <img class="logo" src="logo.png" width="440" height="188" alt="">
+      <h2>Close the lid.</h2>
+      <p class="sub">Free, open source, for every Mac.</p>
+      <div class="cta">
+        <a class="btn" href="https://github.com/aarav-puri/lidless/releases/latest">Download for Mac</a>
+        <a class="btn ghost" href="https://github.com/aarav-puri/lidless">View source</a>
+      </div>
+    </div>
   </section>
 
 </main>
-</div>
 
 <footer>
   <div class="wrap">
-    <p class="footer-note"><time datetime="2026-11">Last updated November 2026</time></p>
-    <div class="footer-links">
+    <p><time datetime="2026-11">Last updated November 2026</time> · Use at your own risk.</p>
+    <nav aria-label="Footer">
       <a href="https://github.com/aarav-puri/lidless">GitHub</a>
       <a href="https://github.com/aarav-puri/lidless/blob/main/LICENSE">License</a>
       <a href="https://github.com/aarav-puri/lidless#privacy">Privacy</a>
-    </div>
+    </nav>
   </div>
 </footer>
 
 <script>
 (() => {
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Fade sections in as they scroll into view.
+  const io = new IntersectionObserver(es => es.forEach(e => {
+    if (e.isIntersecting) { e.target.classList.add('on'); io.unobserve(e.target); }
+  }), { threshold: .15 });
+  document.querySelectorAll('.in').forEach(el => reduce ? el.classList.add('on') : io.observe(el));
+
+  // Terminal: type the commands, then reveal the output line by line.
   const term = document.getElementById('term');
-  if (!term || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  if (!term || reduce) return;
   const lines = [...term.querySelectorAll('.ln')];
   const typed = lines.filter(l => l.hasAttribute('data-type'));
   const full = typed.map(l => l.textContent);
@@ -295,11 +351,10 @@
   const caret = document.createElement('span');
   caret.className = 'caret';
   async function play() {
-    await wait(500);
+    await wait(900);
     for (const line of lines) {
       if (line.hasAttribute('data-type')) {
         const text = full[typed.indexOf(line)];
-        line.append(caret);
         for (let i = 1; i <= text.length; i++) {
           line.textContent = text.slice(0, i);
           line.append(caret);
@@ -308,7 +363,6 @@
         await wait(380);
         caret.remove();
       } else {
-        line.classList.add('shown');
         line.style.opacity = 1; line.style.transform = 'none';
         await wait(160);
       }

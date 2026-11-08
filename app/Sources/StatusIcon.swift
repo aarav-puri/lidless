@@ -1,4 +1,4 @@
-// Menubar icon: a closed laptop seen from the front, with what it is doing drawn above it.
+// Menubar icon: the Lidless mark (a closed laptop, lid and base split by a seam), with what it is doing drawn above it.
 import AppKit
 
 enum StatusIcon {
@@ -9,21 +9,18 @@ enum StatusIcon {
             NSColor.black.setFill()
             NSColor.black.setStroke()
 
-            // Closed lid: the top surface in perspective, then the front edge with the thumb notch.
+            // Closed lid, drawn like the app's glass mark: the lid's top surface in perspective,
+            // a hairline seam, then the base as one thin slab.
             let lid = NSBezierPath()
-            lid.move(to: NSPoint(x: 4.5, y: 7.2))
-            lid.line(to: NSPoint(x: 15.5, y: 7.2))
-            lid.line(to: NSPoint(x: 18.6, y: 3.6))
-            lid.line(to: NSPoint(x: 1.4, y: 3.6))
+            lid.move(to: NSPoint(x: 4.6, y: 7.6))
+            lid.line(to: NSPoint(x: 15.4, y: 7.6))
+            lid.line(to: NSPoint(x: 18.4, y: 4.3))
+            lid.line(to: NSPoint(x: 1.6, y: 4.3))
             lid.close()
             lid.lineWidth = 1.3
             lid.lineJoinStyle = .round
             lid.stroke()
-            let front = NSBezierPath(roundedRect: NSRect(x: 1, y: 1.4, width: 18, height: 2.2), xRadius: 1, yRadius: 1)
-            front.fill()
-            NSGraphicsContext.current?.compositingOperation = .clear
-            NSBezierPath(roundedRect: NSRect(x: 8, y: 2.6, width: 4, height: 1.2), xRadius: 0.6, yRadius: 0.6).fill()
-            NSGraphicsContext.current?.compositingOperation = .sourceOver
+            NSBezierPath(roundedRect: NSRect(x: 1.4, y: 1.2, width: 17.2, height: 1.7), xRadius: 0.85, yRadius: 0.85).fill()
 
             switch state {
             case .working:
