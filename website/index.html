@@ -168,6 +168,8 @@
   .hero h1 .accent, .ch h2 .accent { color: var(--blue-hi); }
   .hero .sub { max-width: 640px; margin-left: auto; margin-right: auto; }
   .cta-note { margin-top: 18px; font-size: 15px; color: var(--ink-2); }
+  .dl-count { margin-top: 6px; font-size: 15px; color: var(--ink-2); }
+  .dl-count b { color: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; }
   .ch .body p + p { margin-top: 14px; }
   .tiles.text > div { justify-content: flex-start; min-height: 0; }
   .tiles h3 { font-size: clamp(20px, 2vw, 24px); line-height: 1.15; font-weight: 600; letter-spacing: -.02em; margin-bottom: 10px; }
@@ -210,7 +212,7 @@
   <a class="l" href="#alternatives">Alternatives</a>
   <a class="l" href="#install">Install</a>
   <a class="l" href="#faq">FAQ</a>
-  <a class="btn sm" href="https://github.com/aarav-puri/lidless/releases/latest">Download</a>
+  <a class="btn sm" href="https://github.com/aarav-puri/lidless/releases/latest/download/Lidless.zip" data-dl>Download</a>
 </div></nav>
 
 <main id="top">
@@ -224,10 +226,11 @@
     </h1>
     <p class="sub fade" style="--d:.6s">Lidless keeps your Mac awake with the lid closed while your coding agent is working. When it finishes, the Mac sleeps.</p>
     <div class="cta fade" style="--d:.75s">
-      <a class="btn" href="https://github.com/aarav-puri/lidless/releases/latest">Download for Mac</a>
+      <a class="btn" href="https://github.com/aarav-puri/lidless/releases/latest/download/Lidless.zip" data-dl>Download for Mac</a>
       <a class="btn ghost" href="https://github.com/aarav-puri/lidless"><svg class="gh" viewBox="0 0 16 16" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>View source on GitHub</a>
     </div>
     <p class="cta-note fade" style="--d:.9s">macOS 13 or later · Apple Silicon and Intel</p>
+    <p class="dl-count fade" style="--d:1s" hidden><b data-count></b> downloads</p>
 
     <div class="stage fade" style="--d:1s">
       <div class="term glass" id="term" role="img" aria-label="Terminal: lidless run wraps a test suite, lidless status shows lid sleep disabled while Claude Code and npm hold it">
@@ -331,10 +334,11 @@
       <img class="logo" src="logo.png" width="440" height="188" alt="">
       <h2>Close the Lid.<br><span class="accent">Your Agent Keeps Going.</span></h2>
       <div class="cta">
-        <a class="btn" href="https://github.com/aarav-puri/lidless/releases/latest">Download for Mac</a>
+        <a class="btn" href="https://github.com/aarav-puri/lidless/releases/latest/download/Lidless.zip" data-dl>Download for Mac</a>
         <a class="btn ghost" href="https://github.com/aarav-puri/lidless"><svg class="gh" viewBox="0 0 16 16" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>View source on GitHub</a>
       </div>
       <p class="cta-note">macOS 13 or later · Apple Silicon and Intel</p>
+      <p class="dl-count" hidden><b data-count></b> downloads</p>
     </div>
   </section>
 
@@ -393,6 +397,27 @@
   new IntersectionObserver((entries, obs) => {
     if (entries.some(e => e.isIntersecting)) { obs.disconnect(); play(); }
   }, { threshold: .3 }).observe(term);
+})();
+</script>
+
+<script>
+// Download count: GitHub counts every download of Lidless.zip, and the buttons link straight to it.
+// /api/downloads caches the total; if that is unavailable, ask GitHub directly.
+(() => {
+  const els = [...document.querySelectorAll('.dl-count')];
+  let count = 0;
+  const show = () => {
+    if (count < 1) return;
+    els.forEach(el => { el.querySelector('[data-count]').textContent = count.toLocaleString('en-US'); el.hidden = false; });
+  };
+  const sum = rs => rs.reduce((n, r) => n + r.assets.filter(a => a.name.endsWith('.zip')).reduce((m, a) => m + a.download_count, 0), 0);
+  fetch('/api/downloads').then(r => r.ok ? r.json() : Promise.reject())
+    .then(d => d.count)
+    .catch(() => fetch('https://api.github.com/repos/aarav-puri/lidless/releases?per_page=100').then(r => r.json()).then(sum))
+    .then(n => { if (Number.isFinite(n)) { count = Math.max(count, n); show(); } })
+    .catch(() => {});
+  // Count the click right away; GitHub's total catches up on the next visit.
+  document.querySelectorAll('[data-dl]').forEach(a => a.addEventListener('click', () => { count++; show(); }));
 })();
 </script>
 
