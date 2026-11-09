@@ -2,7 +2,7 @@
 // which bumps this counter before redirecting to the zip, so the number on the site is clicks
 // that started a download. Stored on Abacus (a free counter service, no account needed).
 const COUNTER = 'https://abacus.jasoncameron.dev';
-const KEY = 'lidless-gamma/downloads';
+const KEY = 'lidless-gamma/zip';
 const ZIP = 'https://github.com/aarav-puri/lidless/releases/latest/download/Lidless.zip';
 
 async function call(path, ms = 2000) {
